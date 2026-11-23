@@ -11,7 +11,3 @@ All notable changes to the Bluewhale clients are documented in this file. The pr
 ### Changed
 
 - Repository status is pre-alpha. The Phase 0 spike is not complete and no client is buildable or installable yet.
-
-## [0.1.0] - Unreleased
-
-Initial repository scaffolding. No client application is available.
