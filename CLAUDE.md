@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current status
 
-This repository was empty when this file was created on 2026-11-23: no source code, build system, tests, CI, or license. If code now exists, replace this section with the actual architecture and commands.
+This repository was empty when this file was created on 2026-11-23: no source code, build system, tests, or CI. If code now exists, replace this section with the actual architecture and commands.
 
 ## Purpose and release boundary
 
@@ -15,7 +15,7 @@ Rules:
 - The technology stack, project layout, and shared-core integration are not chosen yet. Do not infer them from `bluewhale-ledger`, which is Swift/SwiftUI/SwiftData and Apple-only, or from any private design document.
 - Do not copy source code, assets, design documents, or test fixtures from `bluewhale-ledger` without an explicit, recorded licensing decision.
 - Once an API exists, reuse shared domain and financial behavior from `bluewhale_core` instead of duplicating it in either client.
-- A license has not been selected; do not assume one before publishing the repository or accepting contributions.
+- The project is licensed under the Apache License, Version 2.0 (`LICENSE`). Keep the license text intact and clear any dependency-license question before adding a dependency.
 - Keep the clients independent of closed-source server internals.
 
 ## Development workflow

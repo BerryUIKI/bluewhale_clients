@@ -12,7 +12,7 @@ This repository is intended to contain the Windows and Android client applicatio
 
 ## Licensing
 
-The project is intended to be open source. A license has not been selected yet, so no license is granted at this time. Licensing will be recorded before the repository is published or external contributions are accepted.
+Licensed under the [Apache License, Version 2.0](LICENSE).
 
 ## Contributing
 
