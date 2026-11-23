@@ -1,0 +1,11 @@
+[package]
+name = "clients-runtime"
+description = "Application services that compose core use cases for the Windows and Android clients."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true

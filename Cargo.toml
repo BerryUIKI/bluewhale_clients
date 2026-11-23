@@ -1,0 +1,27 @@
+[workspace]
+resolver = "3"
+members = [
+  "crates/clients-runtime",
+  "crates/clients-ipc",
+  "crates/clients-testkit",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+license = "Apache-2.0"
+repository = "https://github.com/BerryUIKI/bluewhale_clients"
+homepage = "https://github.com/BerryUIKI/bluewhale_clients"
+authors = ["Bluewhale contributors"]
+
+[workspace.dependencies]
+clients-runtime = { version = "0.1.0", path = "crates/clients-runtime" }
+clients-ipc = { version = "0.1.0", path = "crates/clients-ipc" }
+clients-testkit = { version = "0.1.0", path = "crates/clients-testkit" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"

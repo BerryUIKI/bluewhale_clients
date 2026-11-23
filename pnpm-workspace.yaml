@@ -1,0 +1,6 @@
+packages:
+  - desktop
+  - android
+  - ui
+  - packages/*
+  - e2e
