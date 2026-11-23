@@ -18,6 +18,10 @@ Rules:
 - A license has not been selected; do not assume one before publishing the repository or accepting contributions.
 - Keep the clients independent of closed-source server internals.
 
+## Development workflow
+
+Development follows trunk-based development. Keep `main` releasable, commit small focused changes directly to `main`, and avoid long-lived feature branches. Use a short-lived branch only when a change genuinely needs isolation.
+
 ## Development guidance
 
 No build, lint, or test commands exist yet. When the first client skeleton lands, add to this file:
