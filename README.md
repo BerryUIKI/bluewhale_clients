@@ -12,7 +12,9 @@ This repository is intended to contain the Windows and Android client applicatio
 
 ## Licensing
 
-Licensed under the [Apache License, Version 2.0](LICENSE).
+Copyright 2026 BerryUIKI.
+
+Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for attribution.
 
 ## Contributing
 
