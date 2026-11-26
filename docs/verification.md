@@ -108,6 +108,7 @@ production content security policy.
 | `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source. |
 | `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                 |
 | Single-instance check                                   | A second launch exited with code 0 in 195 ms while the first instance stayed open.                                          |
+| GitHub Actions on `9c1bebb`                             | UI CI passed in 29 s; Windows desktop CI passed in 13 min 31 s (cold build with SQLCipher and OpenSSL).                     |
 
 ### Live ledger check
 

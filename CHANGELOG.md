@@ -19,6 +19,7 @@ All notable changes to the Bluewhale clients are documented in this file. The pr
 - Interface ledger screens: first-run setup with React Hook Form and Zod validation, a ledger manager that shows store status with retry and a removal confirmation dialog (Radix AlertDialog), a ledger switcher in the shell, and an overview that shows the active ledger profile or its recovery state.
 - Test coverage for the ledger work: 16 runtime tests (creation, reopening, switching, missing database, missing key, unreadable key, wrong key, non-destructive removal, input validation, corrupt catalog) and 36 interface tests, plus a live WebView2 check of setup, switching, store recovery, and removal.
 - Recorded `blessing` and `WTFPL` licenses for the bundled SQLCipher sources and allowed the core git source in `deny.toml`.
+- A single-instance guard for the desktop application: a second launch focuses the running window and exits, so two processes cannot write the same data directory.
 
 ### Changed
 
