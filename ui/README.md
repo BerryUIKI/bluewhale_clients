@@ -26,3 +26,5 @@ pnpm --filter @bluewhale/ui test
 
 The interface never performs money arithmetic and never imports
 platform-specific code; platform services arrive through the IPC context.
+Radix UI primitives are added with the feature screens that need dialogs,
+menus, and popovers; the Phase 3.1 shell uses native, accessible form controls.

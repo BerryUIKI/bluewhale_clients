@@ -24,7 +24,7 @@ The shared UI never contains financial logic. Tauri commands are thin adapters o
 
 ## Documentation
 
-The approved design and Phase 0 evidence live in the core repository: `docs/clients/CLIENT_DESIGN.md` and `docs/clients/SPIKE_RESULTS.md`. Start at its `docs/README.md`.
+The approved design and Phase 0 evidence live in the core repository: `docs/clients/CLIENT_DESIGN.md` and `docs/clients/SPIKE_RESULTS.md`. Start at its `docs/README.md`. Observed implementation results are recorded in [docs/verification.md](docs/verification.md).
 
 ## Build and test
 
