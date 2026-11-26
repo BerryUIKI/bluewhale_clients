@@ -34,6 +34,7 @@ is listed separately. The design lives in the core repository:
 | `cargo test --workspace`                                | 5 tests passed, including the bindings drift test.                                      |
 | `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri license exceptions. |
 | `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                             |
+| GitHub Actions on `104b3db`                             | UI CI passed in 26 s; Windows desktop CI passed in 6 min 28 s.                          |
 
 ### Live shell check
 
@@ -78,5 +79,3 @@ production content security policy.
 - **Accessibility automation:** no axe run and no manual NVDA/Narrator pass yet;
   semantic landmarks, the skip link, and visible focus are implemented but not
   verified with a screen reader.
-- **CI:** the interface workflow passed on the first push; the Windows desktop
-  workflow runs on the same push.
