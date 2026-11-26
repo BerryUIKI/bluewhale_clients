@@ -63,7 +63,7 @@ Build `ui/dist` before the Rust commands: the desktop crate embeds it at compile
 
 ## Core dependency
 
-The six core crates are consumed from `https://github.com/BerryUIKI/bluewhale_core` at a full revision, declared once in `[workspace.dependencies]` and recorded with the intended tag in `docs/development/core-pin.md`; `Cargo.lock` records the same revision. Local side-by-side development uses a gitignored `.cargo/local-core.toml` patch passed with `cargo --config .cargo/local-core.toml`; CI rejects the file when it exists. The annotated `core-v0.1.0` tag is pending; the pin does not depend on it. See ADR 0003 in the core repository.
+The six core crates are consumed from `https://github.com/BerryUIKI/bluewhale_core` at a full revision, declared once in `[workspace.dependencies]` and recorded with the annotated `v0.1.0` tag in `docs/development/core-pin.md`; `Cargo.lock` records the same revision. Local side-by-side development uses a gitignored `.cargo/local-core.toml` patch passed with `cargo --config .cargo/local-core.toml`; CI rejects the file when it exists. See ADR 0003 in the core repository.
 
 ## Development workflow
 

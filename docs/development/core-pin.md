@@ -7,7 +7,7 @@ revision. `Cargo.lock` records the same revision.
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Pinned on   | 2026-11-26                                                                                                                                                        |
 | Revision    | `7e9cdefb1415f206c653ccc77b1241c9ea9bbce2`                                                                                                                        |
-| Tag         | Not yet pushed. `core-v0.1.0` is the intended annotated tag.                                                                                                      |
+| Tag         | `v0.1.0`, annotated, created 2026-11-26 on the pinned revision.                                                                                                   |
 | Crates      | `core-domain`, `core-application`, `core-persistence`, `core-sync`, `core-crypto`, `core-testkit`                                                                 |
 | Consumed by | `clients-runtime` (`core-domain`, `core-application`, `core-crypto`, `core-persistence`); the other entries are declared for the sync and test work that follows. |
 
@@ -42,8 +42,9 @@ core-testkit = { path = "../bluewhale_core/crates/core-testkit" }
 Run cargo with `cargo --config .cargo/local-core.toml <command>`. The file is
 never committed and CI fails when it exists.
 
-## Pending owner action
+## Tag
 
-P3.2 pins the core revision before the annotated tag is pushed. The tag is a
-release-management step: once `core-v0.1.0` exists, record it in the table; no
-manifest change is needed because the pin is by revision.
+The annotated tag `v0.1.0` was pushed to `bluewhale_core` on 2026-11-26 and
+points at the pinned revision. The pin is by revision, so updating to a later
+core commit does not depend on a new tag; record both in the table when either
+changes. The crates are not published to crates.io.
