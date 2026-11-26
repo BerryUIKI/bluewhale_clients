@@ -17,3 +17,6 @@ test-results/
 *.jks
 .DS_Store
 Thumbs.db
+
+# Local core patch for side-by-side development; never committed.
+.cargo/local-core.toml

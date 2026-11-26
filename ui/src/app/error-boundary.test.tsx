@@ -1,10 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { AppInfo } from "@bluewhale/ipc";
 import { AppErrorBoundary } from "./error-boundary";
 import { AppProviders } from "./providers";
-
-const info: AppInfo = { name: "Bluewhale", version: "0.1.0", os: "windows", arch: "x86_64" };
+import { createFakeIpc } from "../test/fake-ipc";
 
 function Bomb(): never {
   throw new Error("render failure");
@@ -16,7 +14,7 @@ describe("the error boundary", () => {
 
     render(
       <AppProviders
-        ipc={{ appInfo: async () => info }}
+        ipc={createFakeIpc().ipc}
         initialPreferences={{ language: "en", theme: "system" }}
       >
         <AppErrorBoundary>

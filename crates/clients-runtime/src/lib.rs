@@ -5,6 +5,19 @@
 //! sync scheduling, export, and platform ports. It contains no UI framework
 //! code and no financial rules of its own.
 
+pub mod catalog;
+pub mod clock;
+pub mod error;
+pub mod ledger;
+
+pub use catalog::{CatalogStore, LedgerCatalog, LedgerDescriptor};
+pub use clock::{SystemClock, Uuidv7Source};
+pub use error::LedgerError;
+pub use ledger::{
+    ActiveLedgerProfile, CreateLedgerRequest, DefaultContent, LedgerList, LedgerService,
+    LedgerStatus, LedgerSummary, LedgerUnavailable, RemovedLedger,
+};
+
 /// Build and platform information the application shell displays.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AppDetails {

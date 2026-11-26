@@ -13,9 +13,65 @@ export const commands = {
 	 *  Returns [`CommandError`] when the package metadata is unavailable.
 	 */
 	appInfo: (options?: InvokeOptions) => typedError<AppInfo, CommandError_Serialize>(__TAURI_INVOKE("app_info", undefined, options)),
+	/**
+	 *  Returns the ledger selector data.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when the catalog cannot be read.
+	 */
+	ledgerList: (options?: InvokeOptions) => typedError<LedgerListDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("ledger_list", undefined, options)),
+	/**
+	 *  Creates a ledger, initializes its database, and selects it.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	ledgerCreate: (request: CreateLedgerRequestDto, options?: InvokeOptions) => typedError<LedgerSummaryDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("ledger_create", { request }, options)),
+	/**
+	 *  Opens and selects a ledger.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when the ledger is unknown or its store cannot be
+	 *  opened.
+	 */
+	ledgerSwitch: (ledgerId: string, options?: InvokeOptions) => typedError<LedgerSummaryDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("ledger_switch", { ledgerId }, options)),
+	/**
+	 *  Removes a ledger from this device without deleting its files.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when the ledger is unknown or the catalog cannot be
+	 *  written.
+	 */
+	ledgerRemove: (ledgerId: string, options?: InvokeOptions) => typedError<RemovedLedgerDto, CommandError_Serialize>(__TAURI_INVOKE("ledger_remove", { ledgerId }, options)),
+	/**
+	 *  Returns the profile of the open ledger, if any.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when the application state is unavailable.
+	 */
+	ledgerActiveProfile: (options?: InvokeOptions) => typedError<ActiveLedgerProfileDto | null, CommandError_Serialize>(__TAURI_INVOKE("ledger_active_profile", undefined, options)),
 };
 
 /* Types */
+/**  The profile of the open ledger. */
+export type ActiveLedgerProfileDto = {
+	/**  The ledger identity. */
+	id: string,
+	/**  The user-facing name. */
+	name: string,
+	/**  The user-facing emoji. */
+	emoji: string,
+	/**  The reporting currency code. */
+	currencyCode: string,
+	/**  The IANA time zone identifier. */
+	timeZoneIdentifier: string,
+};
+
 /**  Build and platform information returned by the `app_info` command. */
 export type AppInfo = {
 	/**  The product name from the application package. */
@@ -32,11 +88,26 @@ export type AppInfo = {
 export type CommandError = CommandError_Serialize | CommandError_Deserialize;
 
 /**  A field-level detail attached to a command error. */
-export type CommandErrorDetail = {
+export type CommandErrorDetail = CommandErrorDetail_Serialize | CommandErrorDetail_Deserialize;
+
+/**  A field-level detail attached to a command error. */
+export type CommandErrorDetail_Deserialize = {
 	/**  The request field this detail refers to. */
 	field: string,
 	/**  The message key the UI resolves for this field. */
-	message_key: string,
+	messageKey: string,
+	/**  An optional literal value, such as a local path, shown as-is. */
+	value?: string | null,
+};
+
+/**  A field-level detail attached to a command error. */
+export type CommandErrorDetail_Serialize = {
+	/**  The request field this detail refers to. */
+	field: string,
+	/**  The message key the UI resolves for this field. */
+	messageKey: string,
+	/**  An optional literal value, such as a local path, shown as-is. */
+	value: string | null,
 };
 
 /**  The typed error returned across the IPC boundary. */
@@ -44,9 +115,9 @@ export type CommandError_Deserialize = {
 	/**  The stable reason. */
 	code: ErrorCode,
 	/**  The message key the UI resolves locally. */
-	message_key: string,
+	messageKey: string,
 	/**  Optional field-level details, for form feedback. */
-	details?: CommandErrorDetail[] | null,
+	details?: CommandErrorDetail_Deserialize[] | null,
 };
 
 /**  The typed error returned across the IPC boundary. */
@@ -54,9 +125,33 @@ export type CommandError_Serialize = {
 	/**  The stable reason. */
 	code: ErrorCode,
 	/**  The message key the UI resolves locally. */
-	message_key: string,
+	messageKey: string,
 	/**  Optional field-level details, for form feedback. */
-	details: CommandErrorDetail[] | null,
+	details: CommandErrorDetail_Serialize[] | null,
+};
+
+/**  A request to create a ledger. */
+export type CreateLedgerRequestDto = {
+	/**  The user-facing name. */
+	name: string,
+	/**  The user-facing emoji. */
+	emoji: string,
+	/**  The reporting currency code. */
+	currencyCode: string,
+	/**  The IANA time zone identifier. */
+	timeZoneIdentifier: string,
+	/**  The default content, localized by the interface. */
+	defaultContent: DefaultContentDto,
+};
+
+/**  Default content created with a ledger. */
+export type DefaultContentDto = {
+	/**  The default cash account name. */
+	cashAccountName: string,
+	/**  The default expense category names. */
+	expenseCategoryNames: string[],
+	/**  The default income category names. */
+	incomeCategoryNames: string[],
 };
 
 /**
@@ -78,6 +173,98 @@ export type ErrorCode =
 "not_found" | 
 /**  The desktop runtime or a required service is unavailable. */
 "unavailable";
+
+/**  The selector data. */
+export type LedgerListDto = LedgerListDto_Serialize | LedgerListDto_Deserialize;
+
+/**  The selector data. */
+export type LedgerListDto_Deserialize = {
+	/**  The selected ledger, if any. */
+	activeLedgerId?: string | null,
+	/**  The ledgers in creation order. */
+	ledgers: LedgerSummaryDto_Deserialize[],
+};
+
+/**  The selector data. */
+export type LedgerListDto_Serialize = {
+	/**  The selected ledger, if any. */
+	activeLedgerId: string | null,
+	/**  The ledgers in creation order. */
+	ledgers: LedgerSummaryDto_Serialize[],
+};
+
+/**  Whether a ledger store is usable. */
+export type LedgerStatusDto = 
+/**  The store is present and can be opened. */
+"available" | 
+/**  The store is present but cannot be used. */
+"unavailable";
+
+/**  One ledger in the selector. */
+export type LedgerSummaryDto = LedgerSummaryDto_Serialize | LedgerSummaryDto_Deserialize;
+
+/**  One ledger in the selector. */
+export type LedgerSummaryDto_Deserialize = {
+	/**  The ledger identity. */
+	id: string,
+	/**  The user-facing name. */
+	name: string,
+	/**  The user-facing emoji. */
+	emoji: string,
+	/**  The creation instant as an RFC 3339 UTC timestamp. */
+	createdAt: string,
+	/**  Whether this ledger is selected. */
+	isActive: boolean,
+	/**  Whether the store is usable. */
+	status: LedgerStatusDto,
+	/**  Why the store is unusable; present only when the status is unavailable. */
+	unavailableReason?: LedgerUnavailableDto | null,
+	/**  The ledger directory, for support and recovery. */
+	dataPath: string,
+};
+
+/**  One ledger in the selector. */
+export type LedgerSummaryDto_Serialize = {
+	/**  The ledger identity. */
+	id: string,
+	/**  The user-facing name. */
+	name: string,
+	/**  The user-facing emoji. */
+	emoji: string,
+	/**  The creation instant as an RFC 3339 UTC timestamp. */
+	createdAt: string,
+	/**  Whether this ledger is selected. */
+	isActive: boolean,
+	/**  Whether the store is usable. */
+	status: LedgerStatusDto,
+	/**  Why the store is unusable; present only when the status is unavailable. */
+	unavailableReason: LedgerUnavailableDto | null,
+	/**  The ledger directory, for support and recovery. */
+	dataPath: string,
+};
+
+/**  Why a ledger store cannot be used. */
+export type LedgerUnavailableDto = 
+/**  The database file is missing. */
+"missing_database" | 
+/**  The key file is missing. */
+"missing_key" | 
+/**  The key cannot be unprotected. */
+"key_unreadable" | 
+/**  The database cannot be opened. */
+"database_unreadable" | 
+/**  The database has no ledger settings. */
+"not_initialized" | 
+/**  Another local failure. */
+"unknown";
+
+/**  The result of removing a ledger from this device. */
+export type RemovedLedgerDto = {
+	/**  The removed ledger identity. */
+	id: string,
+	/**  The directory that still holds the database and key files. */
+	dataPath: string,
+};
 
 /* Tauri Specta runtime */
 async function typedError<T, E>(result: Promise<T>): Promise<{ status: "ok"; data: T } | { status: "error"; error: E }> {

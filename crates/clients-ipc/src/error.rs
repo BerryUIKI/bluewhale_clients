@@ -46,15 +46,19 @@ impl fmt::Display for ErrorCode {
 
 /// A field-level detail attached to a command error.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct CommandErrorDetail {
     /// The request field this detail refers to.
     pub field: String,
     /// The message key the UI resolves for this field.
     pub message_key: String,
+    /// An optional literal value, such as a local path, shown as-is.
+    pub value: Option<String>,
 }
 
 /// The typed error returned across the IPC boundary.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct CommandError {
     /// The stable reason.
     pub code: ErrorCode,
@@ -116,15 +120,18 @@ mod tests {
         let error = CommandError::new(ErrorCode::InvalidRequest, "errors.invalid_request");
         let value = serde_json::to_value(&error).unwrap();
         assert_eq!(value["code"], "invalid_request");
-        assert_eq!(value["message_key"], "errors.invalid_request");
+        assert_eq!(value["messageKey"], "errors.invalid_request");
         assert!(value["details"].is_null());
 
         let detailed = error.clone().with_details(vec![CommandErrorDetail {
             field: "amount".to_string(),
             message_key: "errors.amount_scale".to_string(),
+            value: None,
         }]);
         let value = serde_json::to_value(&detailed).unwrap();
         assert_eq!(value["details"][0]["field"], "amount");
+        assert_eq!(value["messageKey"], "errors.invalid_request");
+        assert!(value["details"][0]["value"].is_null());
         assert_eq!(error.to_string(), "invalid_request: errors.invalid_request");
         assert!(std::error::Error::source(&detailed).is_none());
     }

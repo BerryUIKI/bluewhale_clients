@@ -8,12 +8,20 @@
 
 pub mod commands;
 mod error;
+pub mod ledger;
 
-pub use commands::app_info;
+pub use commands::{
+    app_info, ledger_active_profile, ledger_create, ledger_list, ledger_remove, ledger_switch,
+};
 pub use error::{CommandError, CommandErrorDetail, ErrorCode};
+pub use ledger::{
+    ActiveLedgerProfileDto, AppState, CreateLedgerRequestDto, DefaultContentDto, LedgerListDto,
+    LedgerStatusDto, LedgerSummaryDto, LedgerUnavailableDto, RemovedLedgerDto,
+};
 
 /// Build and platform information returned by the `app_info` command.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct AppInfo {
     /// The product name from the application package.
     pub name: String,
@@ -41,7 +49,14 @@ impl From<clients_runtime::AppDetails> for AppInfo {
 #[must_use]
 pub fn builder() -> tauri_specta::Builder<tauri::Wry> {
     tauri_specta::Builder::<tauri::Wry>::new()
-        .commands(tauri_specta::collect_commands![commands::app_info])
+        .commands(tauri_specta::collect_commands![
+            commands::app_info,
+            commands::ledger_list,
+            commands::ledger_create,
+            commands::ledger_switch,
+            commands::ledger_remove,
+            commands::ledger_active_profile,
+        ])
         .error_handling(tauri_specta::ErrorHandlingMode::Result)
 }
 

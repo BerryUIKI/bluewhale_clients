@@ -1,8 +1,9 @@
-import { NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { NavLink, Outlet } from "react-router-dom";
 import { BrandMark } from "../components/brand-mark";
+import { LedgerSwitcher } from "../features/ledgers/ledger-switcher";
 
-/** The application frame: navigation, header, and the routed page. */
+/** The application frame: navigation, ledger switcher, and the routed page. */
 export function AppShell() {
   const { t } = useTranslation();
 
@@ -17,11 +18,13 @@ export function AppShell() {
             <BrandMark className="size-8 text-accent" />
             <span className="text-lg font-semibold tracking-tight">Bluewhale</span>
           </div>
+          <LedgerSwitcher />
           <nav
             aria-label={t("shell.navigation")}
             className="flex gap-1 px-3 pb-3 md:flex-col md:pb-0"
           >
             <NavItem to="/" end label={t("shell.home")} />
+            <NavItem to="/ledgers" label={t("shell.ledgers")} />
             <NavItem to="/settings" label={t("shell.settings")} />
           </nav>
           <p className="mt-auto hidden px-5 py-6 text-xs text-muted md:block">

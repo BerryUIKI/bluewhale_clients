@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "crates/clients-runtime",
   "crates/clients-ipc",
+  "crates/clients-platform",
   "crates/clients-testkit",
   "desktop/src-tauri",
 ]
@@ -19,7 +20,17 @@ authors = ["Bluewhale contributors"]
 [workspace.dependencies]
 clients-runtime = { version = "0.1.0", path = "crates/clients-runtime" }
 clients-ipc = { version = "0.1.0", path = "crates/clients-ipc" }
+clients-platform = { version = "0.1.0", path = "crates/clients-platform" }
 clients-testkit = { version = "0.1.0", path = "crates/clients-testkit" }
+
+# Core crates are consumed from the public repository at a full revision. The
+# revision and the corresponding tag are recorded in docs/development/core-pin.md.
+core-application = { version = "0.1.0", git = "https://github.com/BerryUIKI/bluewhale_core", rev = "7e9cdefb1415f206c653ccc77b1241c9ea9bbce2" }
+core-crypto = { version = "0.1.0", git = "https://github.com/BerryUIKI/bluewhale_core", rev = "7e9cdefb1415f206c653ccc77b1241c9ea9bbce2" }
+core-domain = { version = "0.1.0", git = "https://github.com/BerryUIKI/bluewhale_core", rev = "7e9cdefb1415f206c653ccc77b1241c9ea9bbce2" }
+core-persistence = { version = "0.1.0", git = "https://github.com/BerryUIKI/bluewhale_core", rev = "7e9cdefb1415f206c653ccc77b1241c9ea9bbce2" }
+core-sync = { version = "0.1.0", git = "https://github.com/BerryUIKI/bluewhale_core", rev = "7e9cdefb1415f206c653ccc77b1241c9ea9bbce2" }
+core-testkit = { version = "0.1.0", git = "https://github.com/BerryUIKI/bluewhale_core", rev = "7e9cdefb1415f206c653ccc77b1241c9ea9bbce2" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

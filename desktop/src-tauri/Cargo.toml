@@ -18,7 +18,10 @@ tauri-build = { version = "2.7.6", features = [] }
 
 [dependencies]
 clients-ipc.workspace = true
+clients-platform.workspace = true
+clients-runtime.workspace = true
 tauri = { version = "2.12.7", features = [] }
+tauri-plugin-single-instance = "2.5.5"
 
 [lints]
 workspace = true

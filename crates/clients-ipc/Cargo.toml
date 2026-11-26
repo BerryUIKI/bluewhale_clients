@@ -9,6 +9,7 @@ repository.workspace = true
 
 [dependencies]
 clients-runtime.workspace = true
+jiff = "1.0.2"
 serde = { version = "1.0.229", features = ["derive"] }
 specta = { version = "=2.0.0-rc.28", features = ["derive"] }
 specta-typescript = "=0.0.15"

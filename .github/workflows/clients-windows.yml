@@ -19,6 +19,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Reject a local core patch
+        shell: bash
+        run: test ! -e .cargo/local-core.toml
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:

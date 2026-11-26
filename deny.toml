@@ -15,6 +15,9 @@ allow = [
   "ISC",
   "Unicode-3.0",
   "Zlib",
+  # sqlcipher-src bundles SQLite (blessing) and libtomcrypt (WTFPL).
+  "blessing",
+  "WTFPL",
 ]
 confidence-threshold = 0.93
 # Recorded exceptions for the approved Tauri 2 stack. MPL-2.0 is a file-level
@@ -37,3 +40,5 @@ wildcards = "deny"
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# The core crates are consumed from the public repository at a pinned revision.
+allow-git = ["https://github.com/BerryUIKI/bluewhale_core"]

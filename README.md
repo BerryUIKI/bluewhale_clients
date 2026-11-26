@@ -4,7 +4,7 @@ Windows and Android applications for the Bluewhale product line.
 
 ## Status
 
-Pre-alpha. The product, architecture, domain, sync, client, and quality reviews (R1-R6) are approved, and the Phase 0 Rust + Tauri spike is complete. The Phase 3.1 shell is implemented: a Tauri 2 Windows application, the shared React + TypeScript interface with routing, design tokens, English and Simplified Chinese resources, typed IPC bindings generated from the Rust command boundary, and localized error handling. The Android application and the ledger features are not implemented yet, and no client is installable.
+Pre-alpha. The product, architecture, domain, sync, client, and quality reviews (R1-R6) are approved, and the Phase 0 Rust + Tauri spike is complete. The Phase 3.1 shell is implemented: a Tauri 2 Windows application, the shared React + TypeScript interface with routing, design tokens, English and Simplified Chinese resources, typed IPC bindings generated from the Rust command boundary, and localized error handling. Phase 3.2 adds ledger management: first-run setup, multiple ledgers with separate SQLCipher databases, switching, and non-destructive recovery when a store cannot be opened. The Android application and the ledger features beyond setup are not implemented yet, and no client is installable.
 
 The shared core lives in [bluewhale_core](https://github.com/BerryUIKI/bluewhale_core). The sync server is a separate private repository.
 
@@ -18,6 +18,7 @@ The shared core lives in [bluewhale_core](https://github.com/BerryUIKI/bluewhale
 | `packages/ipc/`     | Generated TypeScript bindings and the typed client for Tauri commands         |
 | `packages/config/`  | Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration           |
 | `packages/testkit/` | Test doubles, fixtures, and accessibility helpers                             |
+| `crates/`           | Rust runtime, Tauri command boundary, platform services, and test support     |
 | `e2e/`              | Browser, Windows, and Android end-to-end tests                                |
 
 The shared UI never contains financial logic. Tauri commands are thin adapters over the core use cases, and the Android fallback (a Compose application) can replace `android/` without touching `desktop/` or `ui/`.
@@ -45,7 +46,11 @@ cargo deny check
 
 Build the interface before the Rust commands: the desktop crate embeds `ui/dist` when it is compiled. Run the application with `pnpm dev`, which starts Vite and the Tauri window; `pnpm build` produces the release bundles. The TypeScript bindings in `packages/ipc/src/bindings.ts` are generated from the Rust command signatures with `cargo run -p clients-ipc --bin export_bindings`, and a Rust test fails when the committed file drifts.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for prerequisites, including the native Perl and `nmake` requirement for the vendored SQLCipher/OpenSSL build on Windows.
+The Rust workspace builds `core-persistence` with vendored SQLCipher and OpenSSL, so the native Windows Perl and `nmake` requirement from the core applies here too. Run cargo from an environment that has `vcvars64.bat` applied and Strawberry Perl first on `PATH`; a small `target/build-env.bat` wrapper works. The core crates are pinned in [docs/development/core-pin.md](docs/development/core-pin.md).
+
+For development against a separate data directory, set `BLUEWHALE_DATA_DIR` before starting the application.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the remaining prerequisites.
 
 ## Licensing
 

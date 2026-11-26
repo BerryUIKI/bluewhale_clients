@@ -2,13 +2,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import type { AppInfo } from "@bluewhale/ipc";
 import { IpcError } from "@bluewhale/ipc";
 import { AppProviders } from "./providers";
 import { routes } from "./routes";
 import type { IpcClient } from "../lib/ipc-context";
-
-const info: AppInfo = { name: "Bluewhale", version: "0.1.0", os: "windows", arch: "x86_64" };
+import { activeProfile, createFakeIpc, ledgerSummary } from "../test/fake-ipc";
 
 function renderApp(ipc: IpcClient, initialEntries: string[] = ["/"]) {
   const router = createMemoryRouter(routes, { initialEntries });
@@ -19,18 +17,55 @@ function renderApp(ipc: IpcClient, initialEntries: string[] = ["/"]) {
   );
 }
 
-describe("the application shell", () => {
-  it("shows the runtime metadata returned over IPC", async () => {
-    renderApp({ appInfo: async () => info });
+function householdFake() {
+  const household = ledgerSummary({ id: "ledger-1", name: "Household", isActive: true });
+  return createFakeIpc({
+    ledgers: [household],
+    activeLedgerId: household.id,
+    profile: activeProfile({
+      id: household.id,
+      name: "Household",
+      currencyCode: "CNY",
+      timeZoneIdentifier: "Asia/Shanghai",
+    }),
+  });
+}
 
-    expect(await screen.findByText("0.1.0")).toBeInTheDocument();
-    expect(screen.getByText("windows / x86_64")).toBeInTheDocument();
+describe("the application shell", () => {
+  it("shows the active ledger profile", async () => {
+    const fake = householdFake();
+    renderApp(fake.ipc);
+
+    expect(await screen.findByRole("heading", { name: "Household" })).toBeInTheDocument();
+    expect(screen.getByText("CNY")).toBeInTheDocument();
+    expect(screen.getByText("Asia/Shanghai")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Overview" })).toBeInTheDocument();
+  });
+
+  it("switches the active ledger from the shell", async () => {
+    const user = userEvent.setup();
+    const household = ledgerSummary({ id: "ledger-1", name: "Household", isActive: true });
+    const business = ledgerSummary({ id: "ledger-2", name: "Business" });
+    const fake = createFakeIpc({
+      ledgers: [household, business],
+      activeLedgerId: household.id,
+      profile: activeProfile({ id: household.id, name: "Household" }),
+    });
+    renderApp(fake.ipc);
+
+    await screen.findByRole("heading", { name: "Household" });
+    const select = screen.getByLabelText("Ledger");
+    await user.selectOptions(select, "ledger-2");
+
+    expect(await screen.findByRole("heading", { name: "Business" })).toBeInTheDocument();
+    expect(fake.state.activeLedgerId).toBe("ledger-2");
   });
 
   it("navigates to settings and switches the interface language", async () => {
     const user = userEvent.setup();
-    renderApp({ appInfo: async () => info });
+    const fake = householdFake();
+    renderApp(fake.ipc);
+    await screen.findByRole("heading", { name: "Household" });
 
     await user.click(screen.getByRole("link", { name: "Settings" }));
     expect(await screen.findByRole("heading", { name: "Settings" })).toBeInTheDocument();
@@ -42,32 +77,28 @@ describe("the application shell", () => {
 
   it("applies the chosen appearance to the document", async () => {
     const user = userEvent.setup();
-    renderApp({ appInfo: async () => info }, ["/settings"]);
+    renderApp(householdFake().ipc, ["/settings"]);
 
     await user.click(await screen.findByRole("radio", { name: "Dark" }));
     await waitFor(() => expect(document.documentElement.dataset.theme).toBe("dark"));
   });
 
   it("surfaces an unavailable desktop runtime without crashing", async () => {
-    const unavailable: IpcClient = {
-      appInfo: async () => {
-        throw new IpcError({
-          code: "unavailable",
-          message_key: "errors.unavailable",
-          details: null,
-        });
-      },
+    const fake = createFakeIpc();
+    fake.ipc.ledgerList = async () => {
+      throw new IpcError({ code: "unavailable", messageKey: "errors.unavailable", details: null });
     };
-    renderApp(unavailable);
+    renderApp(fake.ipc);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "The desktop runtime is not available.",
-    );
-    expect(screen.getByText(/Open the application through pnpm dev/)).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "The ledger list is unavailable" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("The desktop runtime is not available.");
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
 
   it("shows the not-found page for an unknown route", async () => {
-    renderApp({ appInfo: async () => info }, ["/missing"]);
+    renderApp(householdFake().ipc, ["/missing"]);
 
     expect(await screen.findByRole("heading", { name: "Page not found" })).toBeInTheDocument();
   });

@@ -12,11 +12,20 @@ All notable changes to the Bluewhale clients are documented in this file. The pr
 - `clients-runtime`: the application service that supplies build and platform metadata to the command boundary.
 - ESLint, Prettier, TypeScript, and Vitest configuration in `packages/config`, 24 interface tests with React Testing Library, and CI workflows for the interface and the Windows desktop checks.
 - Recorded MPL-2.0 and `Apache-2.0 WITH LLVM-exception` exceptions for the approved Tauri 2 transitive dependencies in `deny.toml`.
+- Phase 3.2 ledger management: a device-local catalog of ledger descriptors and the active selection, written atomically and containing no key material; first-run setup and add-ledger forms with the ledger name, emoji, reporting currency, time zone, and localized default account and category names; per-ledger SQLCipher databases initialized through the core ledger use case; switching; and non-destructive removal that keeps the database and key files.
+- `clients-platform`: the Windows key protector. Ledger database keys are 256-bit random values protected with user-scoped DPAPI, using the ledger identity as additional entropy, and stored beside the ledger database as protected blobs rather than raw keys.
+- `clients-runtime` ledger services: the catalog store, the ledger service (create, open, switch, remove, active profile), a system clock, and a UUIDv7 source. Six core crates are pinned from the public repository at a full revision, recorded with the intended tag in `docs/development/core-pin.md`.
+- `clients-ipc` ledger commands: `ledger_list`, `ledger_create`, `ledger_switch`, `ledger_remove`, and `ledger_active_profile`, with typed DTOs, camelCase fields, and error details that carry a local data path for recovery. The generated bindings were regenerated and the drift test covers them.
+- Interface ledger screens: first-run setup with React Hook Form and Zod validation, a ledger manager that shows store status with retry and a removal confirmation dialog (Radix AlertDialog), a ledger switcher in the shell, and an overview that shows the active ledger profile or its recovery state.
+- Test coverage for the ledger work: 16 runtime tests (creation, reopening, switching, missing database, missing key, unreadable key, wrong key, non-destructive removal, input validation, corrupt catalog) and 36 interface tests, plus a live WebView2 check of setup, switching, store recovery, and removal.
+- Recorded `blessing` and `WTFPL` licenses for the bundled SQLCipher sources and allowed the core git source in `deny.toml`.
 
 ### Changed
 
-- Repository status is pre-alpha. Phase 3.1 is complete; the Android application and the ledger features are not implemented yet.
+- Repository status is pre-alpha. Phase 3.2 is complete; the Android application and the ledger features beyond setup are not implemented yet.
+- The Rust workspace now builds the core persistence crate with vendored SQLCipher and OpenSSL, so cargo commands need the native Windows Perl and `nmake` environment.
 
 ### Security
 
 - The desktop application uses a strict content security policy, with a separate development policy for the Vite dev server, and its only capability is `core:default`: no shell, process, or file-system permissions. The Tauri `devtools` feature is not enabled.
+- Ledger keys are protected with user-scoped DPAPI bound to the ledger identity. The catalog holds descriptors and the active selection only; key files contain DPAPI blobs, never raw keys. Removing a ledger from the device leaves its files in place and never deletes financial data.

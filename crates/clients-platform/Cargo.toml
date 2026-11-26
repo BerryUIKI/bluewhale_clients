@@ -1,0 +1,20 @@
+[package]
+name = "clients-platform"
+description = "Platform services for the Bluewhale clients, including the Windows key protector."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_Security_Cryptography"] }
+
+# This crate holds the only unsafe code in the workspace: two Windows DPAPI
+# calls. The workspace forbids unsafe code; this crate denies it and allows the
+# single FFI module explicitly.
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+all = "warn"

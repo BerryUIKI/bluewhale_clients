@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current status
 
-Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is complete. Phase 3.1 is implemented: the Tauri 2 Windows shell, the shared React interface with routing, design tokens, English and Simplified Chinese resources, persisted preferences, localized error handling, and TypeScript bindings generated from the Rust command boundary. The Android application and the ledger features are not implemented.
+Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is complete. Phase 3.1 is implemented: the Tauri 2 Windows shell, the shared React interface with routing, design tokens, English and Simplified Chinese resources, persisted preferences, localized error handling, and TypeScript bindings generated from the Rust command boundary. Phase 3.2 adds ledger management: first-run setup, a device-local catalog, separate SQLCipher databases with DPAPI-protected keys, switching, and non-destructive recovery. The Android application and the ledger features beyond setup are not implemented.
 
 ## Purpose and release boundary
 
@@ -18,18 +18,19 @@ Rules:
 
 ## Workspace layout
 
-| Path                     | Responsibility                                                                |
-| ------------------------ | ----------------------------------------------------------------------------- |
-| `desktop/`               | Tauri 2 Windows application and its thin Rust command layer                   |
-| `android/`               | Tauri 2 Android application, Kotlin plugins, and the committed Gradle project |
-| `ui/`                    | Shared React interface, features, localization, and styles                    |
-| `packages/ipc`           | Generated TypeScript bindings and the typed command client                    |
-| `packages/config`        | Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration           |
-| `packages/testkit`       | Test doubles, fixtures, and accessibility helpers                             |
-| `crates/clients-runtime` | Application services composing core use cases                                 |
-| `crates/clients-ipc`     | Tauri commands, DTOs, and bindings generation                                 |
-| `crates/clients-testkit` | Fake platform services and IPC harnesses                                      |
-| `e2e/`                   | Browser, Windows, and Android end-to-end tests                                |
+| Path                      | Responsibility                                                                           |
+| ------------------------- | ---------------------------------------------------------------------------------------- |
+| `desktop/`                | Tauri 2 Windows application and its thin Rust command layer                              |
+| `android/`                | Tauri 2 Android application, Kotlin plugins, and the committed Gradle project            |
+| `ui/`                     | Shared React interface, features, localization, and styles                               |
+| `packages/ipc`            | Generated TypeScript bindings and the typed command client                               |
+| `packages/config`         | Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration                      |
+| `packages/testkit`        | Test doubles, fixtures, and accessibility helpers                                        |
+| `crates/clients-runtime`  | Application services composing core use cases, the ledger catalog, and ledger management |
+| `crates/clients-ipc`      | Tauri commands, DTOs, and bindings generation                                            |
+| `crates/clients-platform` | Platform services, including the Windows DPAPI key protector                             |
+| `crates/clients-testkit`  | Fake platform services and IPC harnesses                                                 |
+| `e2e/`                    | Browser, Windows, and Android end-to-end tests                                           |
 
 Architectural rules:
 
@@ -58,11 +59,11 @@ pnpm dev                                        # Vite and the Tauri window
 pnpm build                                      # release bundles
 ```
 
-Build `ui/dist` before the Rust commands: the desktop crate embeds it at compile time. Android builds additionally need JDK 21, the Android SDK/NDK, and the Rust Android targets.
+Build `ui/dist` before the Rust commands: the desktop crate embeds it at compile time. The workspace builds `core-persistence` with vendored SQLCipher and OpenSSL, so cargo commands also need the native Windows Perl and `nmake` environment described in the core repository. Android builds additionally need JDK 21, the Android SDK/NDK, and the Rust Android targets. Set `BLUEWHALE_DATA_DIR` to run against a separate data directory.
 
 ## Core dependency
 
-The client Rust crates will depend on the core crates through a pinned git release tag (`core-vX.Y.Z`). Until the first core tag is pushed, this repository does not depend on the core, so every commit stays buildable. Local side-by-side development uses an untracked `.cargo/config.toml` `[patch]` override; CI never uses it. See `docs/architecture/REPOSITORY_LAYOUT.md` in `bluewhale_core`.
+The six core crates are consumed from `https://github.com/BerryUIKI/bluewhale_core` at a full revision, declared once in `[workspace.dependencies]` and recorded with the intended tag in `docs/development/core-pin.md`; `Cargo.lock` records the same revision. Local side-by-side development uses a gitignored `.cargo/local-core.toml` patch passed with `cargo --config .cargo/local-core.toml`; CI rejects the file when it exists. The annotated `core-v0.1.0` tag is pending; the pin does not depend on it. See ADR 0003 in the core repository.
 
 ## Development workflow
 

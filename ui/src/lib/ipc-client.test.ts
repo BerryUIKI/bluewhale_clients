@@ -13,12 +13,17 @@ describe("the IPC client", () => {
     expect(() =>
       unwrapResult({
         status: "error",
-        error: { code: "conflict", message_key: "errors.conflict", details: null },
+        error: { code: "conflict", messageKey: "errors.conflict", details: null },
       }),
     ).toThrow(IpcError);
   });
 
   it("reports an unavailable runtime outside the desktop application", async () => {
     await expect(appInfo()).rejects.toMatchObject({ code: "unavailable" });
+  });
+
+  it("reports the same for the ledger commands outside the desktop application", async () => {
+    const { ledgerList } = await import("@bluewhale/ipc");
+    await expect(ledgerList()).rejects.toMatchObject({ code: "unavailable" });
   });
 });
