@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current status
 
-Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is in progress. This repository contains workspace scaffolding only: the package layout, toolchain pinning, shared Rust crate placeholders, and governance files. The desktop and Android applications are not implemented.
+Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is complete. Phase 3.1 is implemented: the Tauri 2 Windows shell, the shared React interface with routing, design tokens, English and Simplified Chinese resources, persisted preferences, localized error handling, and TypeScript bindings generated from the Rust command boundary. The Android application and the ledger features are not implemented.
 
 ## Purpose and release boundary
 
@@ -18,18 +18,18 @@ Rules:
 
 ## Workspace layout
 
-| Path | Responsibility |
-| --- | --- |
-| `desktop/` | Tauri 2 Windows application and its thin Rust command layer |
-| `android/` | Tauri 2 Android application, Kotlin plugins, and the committed Gradle project |
-| `ui/` | Shared React interface, features, localization, and styles |
-| `packages/ipc` | Generated TypeScript bindings and the typed command client |
-| `packages/config` | Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration |
-| `packages/testkit` | Test doubles, fixtures, and accessibility helpers |
-| `crates/clients-runtime` | Application services composing core use cases |
-| `crates/clients-ipc` | Tauri commands, DTOs, and bindings generation |
-| `crates/clients-testkit` | Fake platform services and IPC harnesses |
-| `e2e/` | Browser, Windows, and Android end-to-end tests |
+| Path                     | Responsibility                                                                |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `desktop/`               | Tauri 2 Windows application and its thin Rust command layer                   |
+| `android/`               | Tauri 2 Android application, Kotlin plugins, and the committed Gradle project |
+| `ui/`                    | Shared React interface, features, localization, and styles                    |
+| `packages/ipc`           | Generated TypeScript bindings and the typed command client                    |
+| `packages/config`        | Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration           |
+| `packages/testkit`       | Test doubles, fixtures, and accessibility helpers                             |
+| `crates/clients-runtime` | Application services composing core use cases                                 |
+| `crates/clients-ipc`     | Tauri commands, DTOs, and bindings generation                                 |
+| `crates/clients-testkit` | Fake platform services and IPC harnesses                                      |
+| `e2e/`                   | Browser, Windows, and Android end-to-end tests                                |
 
 Architectural rules:
 
@@ -48,12 +48,17 @@ pnpm format
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm --filter @bluewhale/ui build
 cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
+cargo deny check
+cargo run -p clients-ipc --bin export_bindings   # regenerate the TypeScript bindings
+pnpm dev                                        # Vite and the Tauri window
+pnpm build                                      # release bundles
 ```
 
-The application packages are added in Phase 1; the pnpm commands become meaningful when those packages exist. Android builds additionally need JDK 21, the Android SDK/NDK, and the Rust Android targets.
+Build `ui/dist` before the Rust commands: the desktop crate embeds it at compile time. Android builds additionally need JDK 21, the Android SDK/NDK, and the Rust Android targets.
 
 ## Core dependency
 

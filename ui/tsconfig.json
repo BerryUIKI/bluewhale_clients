@@ -1,0 +1,7 @@
+{
+  "extends": "@bluewhale/config/tsconfig",
+  "compilerOptions": {
+    "types": ["vite/client", "vitest/globals"]
+  },
+  "include": ["src", "vite.config.ts"]
+}

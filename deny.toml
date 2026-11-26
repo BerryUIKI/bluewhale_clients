@@ -17,6 +17,17 @@ allow = [
   "Zlib",
 ]
 confidence-threshold = 0.93
+# Recorded exceptions for the approved Tauri 2 stack. MPL-2.0 is a file-level
+# copyleft license; these crates are transitive dependencies of Tauri/wry and
+# are used unmodified. The LLVM exception is an Apache-2.0 variant.
+exceptions = [
+  { name = "cssparser", allow = ["MPL-2.0"] },
+  { name = "cssparser-macros", allow = ["MPL-2.0"] },
+  { name = "dtoa-short", allow = ["MPL-2.0"] },
+  { name = "option-ext", allow = ["MPL-2.0"] },
+  { name = "selectors", allow = ["MPL-2.0"] },
+  { name = "target-lexicon", allow = ["Apache-2.0 WITH LLVM-exception"] },
+]
 
 [bans]
 multiple-versions = "warn"

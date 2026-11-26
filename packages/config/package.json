@@ -1,0 +1,10 @@
+{
+  "name": "@bluewhale/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint.mjs",
+    "./tsconfig": "./tsconfig.base.json"
+  }
+}

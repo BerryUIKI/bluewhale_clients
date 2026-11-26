@@ -1,3 +1,5 @@
 # Config package
 
-Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration for the workspace packages. It lands in Phase 1.
+Shared TypeScript, ESLint, and Prettier configuration for the workspace
+packages. The ESLint flat config is consumed by the repository root; the
+TypeScript base is extended by each package.

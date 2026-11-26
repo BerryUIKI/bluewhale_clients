@@ -8,8 +8,22 @@
   "scripts": {
     "format": "prettier --check .",
     "format:write": "prettier --write .",
-    "lint": "pnpm -r --if-present lint",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test"
+    "lint": "eslint .",
+    "typecheck": "pnpm --filter @bluewhale/ipc typecheck && pnpm --filter @bluewhale/ui typecheck",
+    "test": "pnpm --filter @bluewhale/ui test",
+    "dev": "pnpm --filter @bluewhale/desktop dev",
+    "build": "pnpm --filter @bluewhale/desktop build"
+  },
+  "devDependencies": {
+    "@bluewhale/config": "workspace:*",
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.4",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.8",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.74.0"
   }
 }

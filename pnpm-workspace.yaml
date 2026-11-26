@@ -4,3 +4,9 @@ packages:
   - ui
   - packages/*
   - e2e
+minimumReleaseAgeExclude:
+  - "@types/react@19.3.3"
+  - "@vitest/mocker@5.1.2"
+  - "@vitest/spy@5.1.2"
+  - i18next@27.2.9
+  - vitest@5.1.2

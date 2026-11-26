@@ -4,6 +4,7 @@ members = [
   "crates/clients-runtime",
   "crates/clients-ipc",
   "crates/clients-testkit",
+  "desktop/src-tauri",
 ]
 
 [workspace.package]
@@ -25,3 +26,13 @@ unsafe_code = "forbid"
 
 [workspace.lints.clippy]
 all = "warn"
+
+# Application size and startup follow the Tauri guidance; the workspace has no
+# library crates that need unwinding in release builds.
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
+

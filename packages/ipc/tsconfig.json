@@ -1,0 +1,4 @@
+{
+  "extends": "@bluewhale/config/tsconfig",
+  "include": ["src"]
+}

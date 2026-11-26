@@ -7,5 +7,20 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 
+[dependencies]
+clients-runtime.workspace = true
+serde = { version = "1.0.229", features = ["derive"] }
+specta = { version = "=2.0.0-rc.28", features = ["derive"] }
+specta-typescript = "=0.0.15"
+tauri = { version = "2.12.7", features = ["specta"] }
+tauri-specta = { version = "=2.0.0-rc.29", features = ["derive", "typescript"] }
+
+[dev-dependencies]
+serde_json = "1"
+tauri = { version = "2.12.7", features = ["specta", "test"] }
+
+[target.'cfg(windows)'.build-dependencies]
+tauri-winres = "0.3.7"
+
 [lints]
 workspace = true
