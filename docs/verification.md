@@ -9,31 +9,31 @@ is listed separately. The design lives in the core repository:
 
 ### Environment
 
-| Item | Value |
-| --- | --- |
-| Date | 2026-11-26 |
-| Host | Windows 10 Pro 10.0.19045, `x86_64-pc-windows-msvc` |
-| Node | 24.15.0 |
-| pnpm | 11.18.0 |
-| Rust | 1.97.1 |
-| Tauri | 2.12.7 (CLI 2.12.6) |
+| Item     | Value                                                                    |
+| -------- | ------------------------------------------------------------------------ |
+| Date     | 2026-11-26                                                               |
+| Host     | Windows 10 Pro 10.0.19045, `x86_64-pc-windows-msvc`                      |
+| Node     | 24.15.0                                                                  |
+| pnpm     | 11.18.0                                                                  |
+| Rust     | 1.97.1                                                                   |
+| Tauri    | 2.12.7 (CLI 2.12.6)                                                      |
 | WebView2 | Installed runtime, driven over the Chrome DevTools Protocol on port 9222 |
 
 ### Commands and results
 
-| Command | Result |
-| --- | --- |
-| `pnpm install` | Completed. |
-| `pnpm format` | All files use Prettier style. |
-| `pnpm lint` | 0 problems. |
-| `pnpm typecheck` | Clean for `@bluewhale/ipc` and `@bluewhale/ui`. |
-| `pnpm test` | 6 files, 24 tests passed. |
-| `pnpm --filter @bluewhale/ui build` | 115 modules; JS 414.46 kB (130.29 kB gzip), CSS 11.82 kB (3.40 kB gzip). |
-| `cargo fmt --all --check` | Clean. |
-| `cargo clippy --workspace --all-targets -- -D warnings` | Clean. |
-| `cargo test --workspace` | 5 tests passed, including the bindings drift test. |
-| `cargo deny check` | advisories, bans, licenses, and sources ok, with the recorded Tauri license exceptions. |
-| `pnpm --filter @bluewhale/desktop build:debug` | Built `target/debug/bluewhale-desktop.exe`. |
+| Command                                                 | Result                                                                                  |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `pnpm install`                                          | Completed.                                                                              |
+| `pnpm format`                                           | All files use Prettier style.                                                           |
+| `pnpm lint`                                             | 0 problems.                                                                             |
+| `pnpm typecheck`                                        | Clean for `@bluewhale/ipc` and `@bluewhale/ui`.                                         |
+| `pnpm test`                                             | 6 files, 24 tests passed.                                                               |
+| `pnpm --filter @bluewhale/ui build`                     | 115 modules; JS 414.46 kB (130.29 kB gzip), CSS 11.82 kB (3.40 kB gzip).                |
+| `cargo fmt --all --check`                               | Clean.                                                                                  |
+| `cargo clippy --workspace --all-targets -- -D warnings` | Clean.                                                                                  |
+| `cargo test --workspace`                                | 5 tests passed, including the bindings drift test.                                      |
+| `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri license exceptions. |
+| `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                             |
 
 ### Live shell check
 
