@@ -180,6 +180,7 @@ clean data directory. The DevTools Protocol drove the interface:
 | `cargo test --workspace`                                | 38 tests passed: 7 IPC, 3 platform, and 28 runtime, including 11 master-data tests and 1 database-access test.              |
 | `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source. |
 | `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                 |
+| GitHub Actions on `dad5ddb`                             | UI CI passed in 42 s; Windows desktop CI passed in 3 min 8 s; Core CI on `dc5012e` passed in 1 min 29 s.                    |
 
 ### Live master-data check
 
