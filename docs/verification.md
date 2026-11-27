@@ -329,3 +329,102 @@ clean data directory. The DevTools Protocol drove the interface:
   tested.
 - **10,000-transaction performance and virtualization:** P3.8.
 - **Android:** unchanged from Phase 3.1.
+
+## Phase 3.5 dashboard and reports (2026-11-27)
+
+### Changes
+
+- The overview becomes the ledger dashboard: native-currency balances for every
+  active account, the converted net balance, monthly income, expense, and
+  savings, and a daily cash-flow list with each day's entries. A month selector
+  moves between ledger months.
+- A new Reports screen shows the month's cash-flow summary and a ranked list of
+  expense or income categories with transaction counts and converted totals; the
+  kind switches without leaving the page.
+- Missing exchange rates produce an explicit incomplete state: the missing
+  currency pair is named, native balances stay visible, and every converted total
+  or ranking is hidden rather than shown as a partial sum.
+- The core gained `LoadCategoryRankingUseCase`: a ledger-month ranking of
+  expense or income categories in the reporting currency, with category and group
+  names, transaction counts, deterministic ordering, and missing-rate errors.
+  `LedgerReadSnapshot` now carries categories and category groups. The client pin
+  advances from `7e9cdef` to `184f288`; no new tag was created.
+- Five interface tests cover balances and day detail, month navigation, the
+  missing-rate dashboard, the report ranking and kind switch, and the incomplete
+  ranking; the runtime adds five dashboard tests and the IPC layer two.
+
+### Commands and results
+
+| Command                                                 | Result                                                                                                                      |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format`, `pnpm lint`                              | Clean; 0 problems.                                                                                                          |
+| `pnpm typecheck`                                        | Clean for `@bluewhale/ipc` and `@bluewhale/ui`.                                                                             |
+| `pnpm test`                                             | 14 files, 68 tests passed.                                                                                                  |
+| `pnpm --filter @bluewhale/ui build`                     | 305 modules; JS 688.69 kB (204.37 kB gzip), CSS 24.38 kB (5.23 kB gzip). Vite reports one chunk above 500 kB.               |
+| `cargo fmt --all --check`                               | Clean.                                                                                                                      |
+| `cargo clippy --workspace --all-targets -- -D warnings` | Clean.                                                                                                                      |
+| `cargo test --workspace`                                | 59 tests passed: 12 IPC, 3 platform, and 44 runtime, including 5 dashboard tests.                                           |
+| `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source. |
+| Core `cargo test --workspace` on `184f288`              | Passed, including four new category-ranking tests.                                                                          |
+| Core `cargo clippy`, `cargo deny`, `cargo doc`          | Clean.                                                                                                                      |
+| `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                 |
+
+### Live dashboard and report check
+
+The final debug build was started with
+`BLUEWHALE_DATA_DIR=D:\dev\scratch\bw-p35d-20261127\data`,
+`WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9417`, and a
+clean data directory. The DevTools Protocol drove the interface:
+
+1. Setup creates `Household` (CNY, `Asia/Shanghai`).
+2. Four transactions are recorded: Lunch `88.50` (Food), Bus `20.00`
+   (Transport), and Salary `5000.00` (Salary) in November, plus October lunch
+   `50.00` (Food) on 2026-10-15.
+3. The dashboard shows Cash at `4841.50` CNY (the October expense counts in the
+   all-time balance), a net balance of `4841.50` CNY, November income `5000.00`,
+   expense `108.50`, savings `4891.50`, and a Nov 27 day detail with the three
+   entries and signed amounts.
+4. Previous month shows October: expense `50.00` and the October lunch entry;
+   This month returns to November.
+5. Reports show the expense ranking Food `88.50`, Transport `20.00`, total
+   `108.50`; switching Kind to Income shows Salary `5000.00`.
+6. A USD account, Dollar wallet, with a `25.00` opening balance is added. The
+   dashboard reports the missing USD to CNY rate, keeps Cash `4841.50` CNY and
+   Dollar wallet `25.00` USD, hides the net balance, and shows placeholders for
+   the converted monthly totals.
+7. Reports keep the complete expense ranking while marking the cash-flow section
+   incomplete.
+8. Reloading the window keeps the missing-rate state and all data.
+9. The data directory holds an encrypted ledger database and a 262-byte DPAPI
+   key blob.
+
+### Observations
+
+- The core dashboard converts every active transaction for the net balance, so
+  any foreign-currency event anywhere in the ledger makes the conversion
+  incomplete. The client still shows all native balances and names the first
+  missing pair; converted totals are never partially presented.
+- The category ranking and the dashboard cash flow are independent: a foreign
+  opening balance can make the dashboard incomplete while the month's expense
+  ranking remains complete.
+- Month navigation sends a `YYYY-MM` value; the runtime interprets it on the 15th
+  at noon in the ledger time zone, so month boundaries follow the ledger calendar
+  rather than the device clock.
+- The Reports kind switch reuses the same month and refetches only the ranking;
+  the cash-flow summary does not reload.
+- The dashboard keeps the ledger profile card and the unavailable and empty
+  states from Phase 3.2.
+
+### Not verified in this environment
+
+- **Rate entry:** manual exchange-rate management is Phase 3.6; the live check
+  exercised the missing-rate state rather than a complete conversion. Conversion
+  with stored rates is covered by core and runtime tests.
+- **Release bundles and installers:** only the debug build was produced; MSI and
+  NSIS packaging belong to P3.8.
+- **Accessibility automation and Chinese screens:** no axe or NVDA pass was run,
+  and the live check used English; locale key parity and non-empty messages are
+  tested.
+- **10,000-transaction performance:** the dashboard is not yet exercised at that
+  scale; P3.8.
+- **Android:** unchanged from Phase 3.1.

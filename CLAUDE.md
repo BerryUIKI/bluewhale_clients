@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current status
 
-Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is complete. Phase 3.1 is implemented: the Tauri 2 Windows shell, the shared React interface with routing, design tokens, English and Simplified Chinese resources, persisted preferences, localized error handling, and TypeScript bindings generated from the Rust command boundary. Phase 3.2 adds ledger management: first-run setup, a device-local catalog, separate SQLCipher databases with DPAPI-protected keys, switching, and non-destructive recovery. Phase 3.3 adds master data: accounts with opening balances, tags, owners, and custom groups; two-level categories; tags; counterparties; and archive behavior on every list. Phase 3.4 adds transactions: expense, income, and transfer entry with exact amounts, a ledger-local history with search and filters, editing, soft deletion, and a recovery view. Reports, sync, and the Android application are not implemented yet.
+Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is complete. Phase 3.1 is implemented: the Tauri 2 Windows shell, the shared React interface with routing, design tokens, English and Simplified Chinese resources, persisted preferences, localized error handling, and TypeScript bindings generated from the Rust command boundary. Phase 3.2 adds ledger management: first-run setup, a device-local catalog, separate SQLCipher databases with DPAPI-protected keys, switching, and non-destructive recovery. Phase 3.3 adds master data: accounts with opening balances, tags, owners, and custom groups; two-level categories; tags; counterparties; and archive behavior on every list. Phase 3.4 adds transactions: expense, income, and transfer entry with exact amounts, a ledger-local history with search and filters, editing, soft deletion, and a recovery view. Phase 3.5 adds the dashboard and reports: native balances, a converted net balance, monthly totals, day detail, cash flow, and category rankings, with an explicit incomplete state when an exchange rate is missing. Settings, sync, and the Android application are not implemented yet.
 
 ## Purpose and release boundary
 
@@ -63,7 +63,7 @@ Build `ui/dist` before the Rust commands: the desktop crate embeds it at compile
 
 ## Core dependency
 
-The six core crates are consumed from `https://github.com/BerryUIKI/bluewhale_core` at a full revision, declared once in `[workspace.dependencies]` and recorded with the annotated `v0.1.0` tag in `docs/development/core-pin.md`; `Cargo.lock` records the same revision. Local side-by-side development uses a gitignored `.cargo/local-core.toml` patch passed with `cargo --config .cargo/local-core.toml`; CI rejects the file when it exists. See ADR 0003 in the core repository.
+The six core crates are consumed from `https://github.com/BerryUIKI/bluewhale_core` at a full revision, declared once in `[workspace.dependencies]` and recorded in `docs/development/core-pin.md`; the annotated `v0.1.0` tag remains on the previous integration pin `7e9cdef`, and the current pin `184f288` follows it for the category ranking report. `Cargo.lock` records the same revision. Local side-by-side development uses a gitignored `.cargo/local-core.toml` patch passed with `cargo --config .cargo/local-core.toml`; CI rejects the file when it exists. See ADR 0003 in the core repository.
 
 ## Development workflow
 

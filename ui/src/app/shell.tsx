@@ -25,6 +25,7 @@ export function AppShell() {
           >
             <NavItem to="/" end label={t("shell.home")} />
             <NavItem to="/transactions" label={t("shell.transactions")} />
+            <NavItem to="/reports" label={t("shell.reports")} />
             <NavItem to="/accounts" label={t("shell.accounts")} />
             <NavItem to="/categories" label={t("shell.categories")} />
             <NavItem to="/tags" label={t("shell.tags")} />

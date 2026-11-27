@@ -211,9 +211,39 @@ export const commands = {
 	 *  fails.
 	 */
 	transactionRestore: (transactionId: string, options?: InvokeOptions) => typedError<TransactionDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("transaction_restore", { transactionId }, options)),
+	/**
+	 *  Loads the dashboard for a ledger month.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for a malformed month or a store failure. A missing
+	 *  exchange rate is returned in the dashboard payload, not as an error.
+	 */
+	dashboardLoad: (request: DashboardRequestDto_Deserialize, options?: InvokeOptions) => typedError<DashboardDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("dashboard_load", { request }, options)),
+	/**
+	 *  Loads the category ranking for a ledger month and kind.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for a malformed month or a store failure. A missing
+	 *  exchange rate is returned in the report payload, not as an error.
+	 */
+	reportCategoryRanking: (request: CategoryRankingRequestDto_Deserialize, options?: InvokeOptions) => typedError<CategoryRankingDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("report_category_ranking", { request }, options)),
 };
 
 /* Types */
+/**  One account's balance in its native currency. */
+export type AccountBalanceDto = {
+	/**  The account identity. */
+	accountId: string,
+	/**  The account display name. */
+	accountName: string,
+	/**  The account currency code. */
+	currencyCode: string,
+	/**  The balance in the account currency. */
+	balance: MoneyDto,
+};
+
 /**  A request to create an account. */
 export type AccountCreateRequestDto = AccountCreateRequestDto_Serialize | AccountCreateRequestDto_Deserialize;
 
@@ -525,6 +555,91 @@ export type CategoryKindDto =
 /**  Income categories. */
 "income";
 
+/**  The category ranking for one ledger month and kind. */
+export type CategoryRankingDto = CategoryRankingDto_Serialize | CategoryRankingDto_Deserialize;
+
+/**  The category ranking for one ledger month and kind. */
+export type CategoryRankingDto_Deserialize = {
+	/**  The ledger-local month, `YYYY-MM`. */
+	month: string,
+	/**  The ranked kind. */
+	kind: CategoryKindDto,
+	/**  The reporting currency code. */
+	reportingCurrency: string,
+	/**  The sum of all rows when rates are complete. */
+	total?: MoneyDto | null,
+	/**  Ranked rows when rates are complete. */
+	rows: CategoryRankingRowDto_Deserialize[],
+	/**  The missing rate pair when the report is incomplete. */
+	missingRate?: MissingRateDto | null,
+};
+
+/**  The category ranking for one ledger month and kind. */
+export type CategoryRankingDto_Serialize = {
+	/**  The ledger-local month, `YYYY-MM`. */
+	month: string,
+	/**  The ranked kind. */
+	kind: CategoryKindDto,
+	/**  The reporting currency code. */
+	reportingCurrency: string,
+	/**  The sum of all rows when rates are complete. */
+	total: MoneyDto | null,
+	/**  Ranked rows when rates are complete. */
+	rows: CategoryRankingRowDto_Serialize[],
+	/**  The missing rate pair when the report is incomplete. */
+	missingRate: MissingRateDto | null,
+};
+
+/**  The category ranking request for a ledger month. */
+export type CategoryRankingRequestDto = CategoryRankingRequestDto_Serialize | CategoryRankingRequestDto_Deserialize;
+
+/**  The category ranking request for a ledger month. */
+export type CategoryRankingRequestDto_Deserialize = {
+	/**  The ledger-local month, `YYYY-MM`; empty means the current month. */
+	month?: string,
+	/**  The ranked category kind. */
+	kind: CategoryKindDto,
+};
+
+/**  The category ranking request for a ledger month. */
+export type CategoryRankingRequestDto_Serialize = {
+	/**  The ledger-local month, `YYYY-MM`; empty means the current month. */
+	month: string,
+	/**  The ranked category kind. */
+	kind: CategoryKindDto,
+};
+
+/**  One ranked category. */
+export type CategoryRankingRowDto = CategoryRankingRowDto_Serialize | CategoryRankingRowDto_Deserialize;
+
+/**  One ranked category. */
+export type CategoryRankingRowDto_Deserialize = {
+	/**  The category identity. */
+	categoryId: string,
+	/**  The category display name. */
+	categoryName: string,
+	/**  The group display name, when grouped. */
+	groupName?: string | null,
+	/**  The converted total. */
+	total: MoneyDto,
+	/**  The number of matching transactions. */
+	transactionCount: number,
+};
+
+/**  One ranked category. */
+export type CategoryRankingRowDto_Serialize = {
+	/**  The category identity. */
+	categoryId: string,
+	/**  The category display name. */
+	categoryName: string,
+	/**  The group display name, when grouped. */
+	groupName: string | null,
+	/**  The converted total. */
+	total: MoneyDto,
+	/**  The number of matching transactions. */
+	transactionCount: number,
+};
+
 /**  A request to update a leaf category. */
 export type CategoryUpdateRequestDto = CategoryUpdateRequestDto_Serialize | CategoryUpdateRequestDto_Deserialize;
 
@@ -651,6 +766,103 @@ export type CreateLedgerRequestDto = {
 	timeZoneIdentifier: string,
 	/**  The default content, localized by the interface. */
 	defaultContent: DefaultContentDto,
+};
+
+/**  The dashboard for one ledger month. */
+export type DashboardDto = DashboardDto_Serialize | DashboardDto_Deserialize;
+
+/**  The dashboard for one ledger month. */
+export type DashboardDto_Deserialize = {
+	/**  The ledger-local month, `YYYY-MM`. */
+	month: string,
+	/**  The reporting currency code. */
+	reportingCurrency: string,
+	/**  Currencies used by the reporting currency and active accounts. */
+	availableCurrencies: string[],
+	/**  Native-currency balances of the active accounts. */
+	accountBalances: AccountBalanceDto[],
+	/**  The net balance when rates are complete. */
+	netBalance?: MoneyDto | null,
+	/**  Converted income for the month when rates are complete. */
+	monthlyIncome?: MoneyDto | null,
+	/**  Converted expense for the month when rates are complete. */
+	monthlyExpense?: MoneyDto | null,
+	/**  Converted savings for the month when rates are complete. */
+	monthlySavings?: MoneyDto | null,
+	/**  Daily cash flow when rates are complete. */
+	days: DayCashFlowDto_Deserialize[],
+	/**  The missing rate pair when the converted totals are incomplete. */
+	missingRate?: MissingRateDto | null,
+};
+
+/**  The dashboard for one ledger month. */
+export type DashboardDto_Serialize = {
+	/**  The ledger-local month, `YYYY-MM`. */
+	month: string,
+	/**  The reporting currency code. */
+	reportingCurrency: string,
+	/**  Currencies used by the reporting currency and active accounts. */
+	availableCurrencies: string[],
+	/**  Native-currency balances of the active accounts. */
+	accountBalances: AccountBalanceDto[],
+	/**  The net balance when rates are complete. */
+	netBalance: MoneyDto | null,
+	/**  Converted income for the month when rates are complete. */
+	monthlyIncome: MoneyDto | null,
+	/**  Converted expense for the month when rates are complete. */
+	monthlyExpense: MoneyDto | null,
+	/**  Converted savings for the month when rates are complete. */
+	monthlySavings: MoneyDto | null,
+	/**  Daily cash flow when rates are complete. */
+	days: DayCashFlowDto_Serialize[],
+	/**  The missing rate pair when the converted totals are incomplete. */
+	missingRate: MissingRateDto | null,
+};
+
+/**  The dashboard request for a ledger month. */
+export type DashboardRequestDto = DashboardRequestDto_Serialize | DashboardRequestDto_Deserialize;
+
+/**  The dashboard request for a ledger month. */
+export type DashboardRequestDto_Deserialize = {
+	/**  The ledger-local month, `YYYY-MM`; empty means the current month. */
+	month?: string,
+};
+
+/**  The dashboard request for a ledger month. */
+export type DashboardRequestDto_Serialize = {
+	/**  The ledger-local month, `YYYY-MM`; empty means the current month. */
+	month: string,
+};
+
+/**  One day of the ledger month with its converted totals and events. */
+export type DayCashFlowDto = DayCashFlowDto_Serialize | DayCashFlowDto_Deserialize;
+
+/**  One day of the ledger month with its converted totals and events. */
+export type DayCashFlowDto_Deserialize = {
+	/**  The ledger-local date, `YYYY-MM-DD`. */
+	date: string,
+	/**  Converted income on the day. */
+	income: MoneyDto,
+	/**  Converted expense on the day. */
+	expense: MoneyDto,
+	/**  Converted savings on the day. */
+	savings: MoneyDto,
+	/**  The day's transactions. */
+	transactions: TransactionDto_Deserialize[],
+};
+
+/**  One day of the ledger month with its converted totals and events. */
+export type DayCashFlowDto_Serialize = {
+	/**  The ledger-local date, `YYYY-MM-DD`. */
+	date: string,
+	/**  Converted income on the day. */
+	income: MoneyDto,
+	/**  Converted expense on the day. */
+	expense: MoneyDto,
+	/**  Converted savings on the day. */
+	savings: MoneyDto,
+	/**  The day's transactions. */
+	transactions: TransactionDto_Serialize[],
 };
 
 /**  Default content created with a ledger. */
@@ -800,6 +1012,24 @@ export type MasterDataDto_Serialize = {
 	tags: TagDto_Serialize[],
 	/**  Counterparties in manual order. */
 	counterparties: CounterpartyDto[],
+};
+
+/**  A missing conversion rate between two currencies. */
+export type MissingRateDto = {
+	/**  The currency that needs conversion. */
+	sourceCurrency: string,
+	/**  The reporting currency. */
+	reportingCurrency: string,
+};
+
+/**  An exact money amount with its currency. */
+export type MoneyDto = {
+	/**  The amount as an exact decimal string. */
+	text: string,
+	/**  The currency code. */
+	currencyCode: string,
+	/**  The currency scale. */
+	scale: number,
 };
 
 /**  The result of removing a ledger from this device. */

@@ -13,11 +13,15 @@ import type {
   CategoryGroupCreateRequestDto,
   CategoryGroupDto,
   CategoryGroupUpdateRequestDto,
+  CategoryRankingDto,
+  CategoryRankingRequestDto,
   CategoryUpdateRequestDto,
   CounterpartyCreateRequestDto,
   CounterpartyDto,
   CounterpartyUpdateRequestDto,
   CreateLedgerRequestDto,
+  DashboardDto,
+  DashboardRequestDto,
   LedgerListDto,
   LedgerSummaryDto,
   MasterDataDto,
@@ -84,6 +88,10 @@ export interface IpcClient {
   transactionDelete(transactionId: string): Promise<TransactionDto>;
   /** Restores a soft-deleted transaction. */
   transactionRestore(transactionId: string): Promise<TransactionDto>;
+  /** Loads the dashboard for a ledger month. */
+  dashboardLoad(request: DashboardRequestDto): Promise<DashboardDto>;
+  /** Loads the category ranking for a ledger month and kind. */
+  reportCategoryRanking(request: CategoryRankingRequestDto): Promise<CategoryRankingDto>;
 }
 
 /** The injection point for the IPC client. */

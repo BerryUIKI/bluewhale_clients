@@ -324,7 +324,7 @@ fn draft(
     })
 }
 
-fn entry(transaction: &Transaction, zone: &TimeZone) -> TransactionEntry {
+pub(crate) fn entry(transaction: &Transaction, zone: &TimeZone) -> TransactionEntry {
     let zoned = transaction.occurred_at().to_zoned_datetime(zone.clone());
     let date = zoned.date();
     let time = zoned.time();

@@ -7,7 +7,7 @@ import { z } from "zod";
 import type { MasterDataDto, TransactionDto, TransactionKindDto } from "@bluewhale/ipc";
 import { ErrorAlert } from "../../components/error-alert";
 import { useCreateTransaction, useUpdateTransaction } from "../../lib/transaction-queries";
-import { ledgerNowLocal } from "./transaction-format";
+import { ledgerNowLocal } from "../../lib/dates";
 import { SelectField, TextAreaField, TextField } from "../master-data/shared";
 
 type EditableKind = "expense" | "income" | "transfer";

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
@@ -37,8 +37,9 @@ describe("the application shell", () => {
     renderApp(fake.ipc);
 
     expect(await screen.findByRole("heading", { name: "Household" })).toBeInTheDocument();
-    expect(screen.getByText("CNY")).toBeInTheDocument();
-    expect(screen.getByText("Asia/Shanghai")).toBeInTheDocument();
+    const profileSection = screen.getByRole("heading", { name: "Household" }).closest("section")!;
+    expect(within(profileSection).getByText("CNY")).toBeInTheDocument();
+    expect(within(profileSection).getByText("Asia/Shanghai")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Overview" })).toBeInTheDocument();
   });
 

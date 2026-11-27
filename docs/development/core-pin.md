@@ -5,9 +5,9 @@ revision. `Cargo.lock` records the same revision.
 
 | Item        | Value                                                                                                                                                             |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pinned on   | 2026-11-26                                                                                                                                                        |
-| Revision    | `7e9cdefb1415f206c653ccc77b1241c9ea9bbce2`                                                                                                                        |
-| Tag         | `v0.1.0`, annotated, created 2026-11-26 on the pinned revision.                                                                                                   |
+| Pinned on   | 2026-11-27                                                                                                                                                        |
+| Revision    | `184f2887bcc60dc6fd140cc3c90cc5c9b5168ff4`                                                                                                                        |
+| Tag         | None on this revision; the annotated `v0.1.0` tag remains on the previous integration pin `7e9cdef`.                                                              |
 | Crates      | `core-domain`, `core-application`, `core-persistence`, `core-sync`, `core-crypto`, `core-testkit`                                                                 |
 | Consumed by | `clients-runtime` (`core-domain`, `core-application`, `core-crypto`, `core-persistence`); the other entries are declared for the sync and test work that follows. |
 
@@ -45,6 +45,7 @@ never committed and CI fails when it exists.
 ## Tag
 
 The annotated tag `v0.1.0` was pushed to `bluewhale_core` on 2026-11-26 and
-points at the pinned revision. The pin is by revision, so updating to a later
-core commit does not depend on a new tag; record both in the table when either
+points at `7e9cdef`. The pin is by revision; it now follows the tag to include
+the category ranking report added in core `184f288`, so no new tag was created
+for this pin. Record the revision and tag state in the table when either
 changes. The crates are not published to crates.io.

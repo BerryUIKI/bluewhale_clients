@@ -62,6 +62,10 @@ const KNOWN_MESSAGE_KEYS: ReadonlySet<string> = new Set([
   "errors.transaction_opening_balance",
   "errors.transaction_filter_reference",
   "errors.transaction_internal",
+  "errors.dashboard_no_ledger",
+  "errors.dashboard_not_initialized",
+  "errors.dashboard_month",
+  "errors.dashboard_internal",
 ]);
 
 /**

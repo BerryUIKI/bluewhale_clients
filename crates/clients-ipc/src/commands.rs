@@ -4,8 +4,14 @@
 use tauri::{AppHandle, State};
 
 use clients_runtime::transactions as transaction_service;
-use clients_runtime::{MasterDataError, TransactionError, master_data};
+use clients_runtime::{
+    DashboardError, MasterDataError, TransactionError, dashboard as dashboard_service, master_data,
+};
 
+use crate::dashboard::{
+    CategoryRankingDto, CategoryRankingRequestDto, DashboardDto, DashboardRequestDto,
+    map_dashboard_error,
+};
 use crate::ledger::{
     ActiveLedgerProfileDto, AppState, CreateLedgerRequestDto, LedgerListDto, LedgerSummaryDto,
     RemovedLedgerDto, map_ledger_error,
@@ -504,4 +510,50 @@ pub fn transaction_restore(
         })
         .map(TransactionDto::from)
         .map_err(map_transaction_error)
+}
+
+/// Loads the dashboard for a ledger month.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for a malformed month or a store failure. A missing
+/// exchange rate is returned in the dashboard payload, not as an error.
+#[tauri::command]
+#[specta::specta]
+pub fn dashboard_load(
+    state: State<'_, AppState>,
+    request: DashboardRequestDto,
+) -> Result<DashboardDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(DashboardError::NoActiveLedger, |database| {
+            dashboard_service::load(database, Some(request.month.as_str()))
+        })
+        .map(DashboardDto::from)
+        .map_err(map_dashboard_error)
+}
+
+/// Loads the category ranking for a ledger month and kind.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for a malformed month or a store failure. A missing
+/// exchange rate is returned in the report payload, not as an error.
+#[tauri::command]
+#[specta::specta]
+pub fn report_category_ranking(
+    state: State<'_, AppState>,
+    request: CategoryRankingRequestDto,
+) -> Result<CategoryRankingDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(DashboardError::NoActiveLedger, |database| {
+            dashboard_service::category_ranking(
+                database,
+                Some(request.month.as_str()),
+                request.kind.into(),
+            )
+        })
+        .map(CategoryRankingDto::from)
+        .map_err(map_dashboard_error)
 }

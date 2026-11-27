@@ -21,6 +21,10 @@ import type {
   CounterpartyDto,
   CounterpartyUpdateRequestDto,
   CreateLedgerRequestDto,
+  DashboardDto,
+  DashboardRequestDto,
+  CategoryRankingDto,
+  CategoryRankingRequestDto,
   ErrorCode,
   LedgerListDto,
   LedgerSummaryDto,
@@ -60,6 +64,15 @@ export type {
   CounterpartyKindDto,
   CounterpartyUpdateRequestDto,
   CreateLedgerRequestDto,
+  DashboardDto,
+  DashboardRequestDto,
+  DayCashFlowDto,
+  AccountBalanceDto,
+  CategoryRankingDto,
+  CategoryRankingRequestDto,
+  CategoryRankingRowDto,
+  MoneyDto,
+  MissingRateDto,
   ErrorCode,
   LedgerListDto,
   LedgerStatusDto,
@@ -270,4 +283,16 @@ export function transactionDelete(transactionId: string): Promise<TransactionDto
 /** Restores a soft-deleted transaction. */
 export function transactionRestore(transactionId: string): Promise<TransactionDto> {
   return call(() => commands.transactionRestore(transactionId));
+}
+
+/** Loads the dashboard for a ledger month. */
+export function dashboardLoad(request: DashboardRequestDto): Promise<DashboardDto> {
+  return call(() => commands.dashboardLoad(request));
+}
+
+/** Loads the category ranking for a ledger month and kind. */
+export function reportCategoryRanking(
+  request: CategoryRankingRequestDto,
+): Promise<CategoryRankingDto> {
+  return call(() => commands.reportCategoryRanking(request));
 }

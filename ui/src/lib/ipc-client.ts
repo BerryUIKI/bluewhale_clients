@@ -10,6 +10,8 @@ import {
   categoryUpdate,
   counterpartyCreate,
   counterpartyUpdate,
+  dashboardLoad,
+  reportCategoryRanking,
   ledgerActiveProfile,
   ledgerCreate,
   ledgerList,
@@ -54,4 +56,6 @@ export const desktopIpcClient: IpcClient = {
   transactionUpdate,
   transactionDelete,
   transactionRestore,
+  dashboardLoad,
+  reportCategoryRanking,
 };

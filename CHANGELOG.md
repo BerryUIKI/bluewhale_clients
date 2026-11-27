@@ -30,10 +30,16 @@ All notable changes to the Bluewhale clients are documented in this file. The pr
 - `clients-ipc` transaction commands: `transaction_list`, `transaction_get`, `transaction_create`, `transaction_update`, `transaction_delete`, and `transaction_restore`, with exact decimal amount strings, currency scales, reporting directions, and DTOs for every request. The bindings were regenerated and the drift test covers them.
 - The transaction editor defaults its date and time to the ledger time zone, reveals the received-amount field only for cross-currency transfers, warns when a current reference is archived, and clears kind-specific fields when the kind changes.
 - Test coverage for the transaction work: 11 runtime tests, 3 IPC tests, and 10 interface tests, plus a live WebView2 check of recording, filtering, editing, deleting, restoring, and persistence after reload.
+- Phase 3.5 dashboard and reports: the overview now shows native-currency balances, the converted net balance, monthly income, expense, and savings, and a daily cash-flow list with each day's entries; a month selector moves between ledger months. A new Reports screen shows the month's cash-flow summary and a ranked list of expense or income categories with transaction counts and converted totals.
+- Missing exchange rates produce an explicit incomplete state on both screens: the missing currency pair is named, native balances stay visible, and converted totals are hidden instead of shown as partial sums.
+- `clients-runtime` dashboard and report service: a dashboard load composed from the core dashboard use case plus native balances, and a category ranking composed from the new core ranking use case; both report missing rates as data, not errors.
+- `clients-ipc` dashboard and report commands: `dashboard_load` and `report_category_ranking`, with exact money DTOs, optional converted totals, native balances, day cash flow, ranked rows, and the missing-rate pair. The bindings were regenerated and the drift test covers them.
+- The core pin advances to `184f288` for the category ranking report; `LedgerReadSnapshot` now carries categories and category groups.
+- Test coverage for the dashboard work: 5 runtime tests, 2 IPC tests, and 5 interface tests, plus a live WebView2 check of balances, monthly totals, day detail, month navigation, the expense and income rankings, the missing-rate state, and persistence after reload.
 
 ### Changed
 
-- Repository status is pre-alpha. Phase 3.4 is complete; reports, sync, the Android application, and the ledger features beyond transactions are not implemented yet.
+- Repository status is pre-alpha. Phase 3.5 is complete; settings, sync, the Android application, and the features beyond reports are not implemented yet.
 - The Rust workspace now builds the core persistence crate with vendored SQLCipher and OpenSSL, so cargo commands need the native Windows Perl and `nmake` environment.
 
 ### Security

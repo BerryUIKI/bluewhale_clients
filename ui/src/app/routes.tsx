@@ -6,6 +6,7 @@ import { AccountsPage } from "../features/master-data/accounts-page";
 import { CategoriesPage } from "../features/master-data/categories-page";
 import { CounterpartiesPage } from "../features/master-data/counterparties-page";
 import { TagsPage } from "../features/master-data/tags-page";
+import { ReportsPage } from "../features/reports/reports-page";
 import { SettingsPage } from "../features/settings/settings-page";
 import { TransactionEditorPage } from "../features/transactions/transaction-editor-page";
 import { TransactionRecoveryPage } from "../features/transactions/transaction-recovery-page";
@@ -31,6 +32,7 @@ export const routes: RouteObject[] = [
             path: "transactions/:transactionId/edit",
             element: <TransactionEditorPage mode="edit" />,
           },
+          { path: "reports", element: <ReportsPage /> },
           { path: "accounts", element: <AccountsPage /> },
           { path: "categories", element: <CategoriesPage /> },
           { path: "tags", element: <TagsPage /> },

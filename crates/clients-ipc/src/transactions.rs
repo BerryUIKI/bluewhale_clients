@@ -345,7 +345,7 @@ fn draft_input(
 }
 
 /// Formats minor units as an exact decimal string with the currency scale.
-fn money_text(money: &Money) -> String {
+pub(crate) fn money_text(money: &Money) -> String {
     let scale = money.currency().scale() as u32;
     let negative = money.minor_units() < 0;
     let absolute = money.minor_units().unsigned_abs();

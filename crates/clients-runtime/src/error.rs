@@ -259,3 +259,46 @@ impl From<core_domain::RepositoryError> for TransactionError {
         Self::Internal
     }
 }
+
+/// A failure from a dashboard or report operation.
+///
+/// Missing exchange rates are not failures: the runtime returns an explicit
+/// incomplete dashboard or report with the missing currency pair instead.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DashboardError {
+    /// No ledger is open, so there is no database to read.
+    NoActiveLedger,
+    /// The ledger database has not been initialized.
+    NotInitialized,
+    /// The month is not a valid `YYYY-MM` value.
+    InvalidMonth,
+    /// An unexpected local failure occurred.
+    Internal,
+}
+
+impl DashboardError {
+    /// Returns the stable message key the interface localizes.
+    #[must_use]
+    pub const fn message_key(&self) -> &'static str {
+        match self {
+            Self::NoActiveLedger => "errors.dashboard_no_ledger",
+            Self::NotInitialized => "errors.dashboard_not_initialized",
+            Self::InvalidMonth => "errors.dashboard_month",
+            Self::Internal => "errors.dashboard_internal",
+        }
+    }
+}
+
+impl fmt::Display for DashboardError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.message_key())
+    }
+}
+
+impl std::error::Error for DashboardError {}
+
+impl From<core_domain::RepositoryError> for DashboardError {
+    fn from(_: core_domain::RepositoryError) -> Self {
+        Self::Internal
+    }
+}

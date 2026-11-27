@@ -7,6 +7,7 @@
 //! regenerates them, and a test fails when they drift.
 
 pub mod commands;
+pub mod dashboard;
 mod error;
 pub mod ledger;
 pub mod master_data;
@@ -15,9 +16,14 @@ pub mod transactions;
 pub use commands::{
     account_create, account_group_create, account_group_update, account_update, app_info,
     category_create, category_group_create, category_group_update, category_update,
-    counterparty_create, counterparty_update, ledger_active_profile, ledger_create, ledger_list,
-    ledger_remove, ledger_switch, master_data, tag_create, tag_update, transaction_create,
-    transaction_delete, transaction_get, transaction_list, transaction_restore, transaction_update,
+    counterparty_create, counterparty_update, dashboard_load, ledger_active_profile, ledger_create,
+    ledger_list, ledger_remove, ledger_switch, master_data, report_category_ranking, tag_create,
+    tag_update, transaction_create, transaction_delete, transaction_get, transaction_list,
+    transaction_restore, transaction_update,
+};
+pub use dashboard::{
+    AccountBalanceDto, CategoryRankingDto, CategoryRankingRequestDto, CategoryRankingRowDto,
+    DashboardDto, DashboardRequestDto, DayCashFlowDto, MissingRateDto, MoneyDto,
 };
 pub use error::{CommandError, CommandErrorDetail, ErrorCode};
 pub use ledger::{
@@ -94,6 +100,8 @@ pub fn builder() -> tauri_specta::Builder<tauri::Wry> {
             commands::transaction_update,
             commands::transaction_delete,
             commands::transaction_restore,
+            commands::dashboard_load,
+            commands::report_category_ranking,
         ])
         .error_handling(tauri_specta::ErrorHandlingMode::Result)
 }

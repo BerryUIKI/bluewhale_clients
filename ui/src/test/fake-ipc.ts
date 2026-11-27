@@ -18,11 +18,16 @@ import type {
   CounterpartyDto,
   CounterpartyUpdateRequestDto,
   CreateLedgerRequestDto,
+  CategoryRankingDto,
+  CategoryRankingRequestDto,
+  DashboardDto,
+  DashboardRequestDto,
   LedgerListDto,
   LedgerStatusDto,
   LedgerSummaryDto,
   LedgerUnavailableDto,
   MasterDataDto,
+  MoneyDto,
   RemovedLedgerDto,
   TagCreateRequestDto,
   TagDto,
@@ -47,6 +52,13 @@ export interface FakeState {
   masterDataError: Error | null;
   transactions: TransactionDto[];
   transactionError: Error | null;
+  dashboard: DashboardDto | null;
+  dashboardError: Error | null;
+  categoryRanking: CategoryRankingDto | null;
+  rankingError: Error | null;
+  lastDashboardMonth: string | null;
+  lastRankingMonth: string | null;
+  lastRankingKind: string | null;
 }
 
 export interface FakeIpc {
@@ -112,6 +124,44 @@ export function activeProfile(
   };
 }
 
+/** Returns an exact money DTO for tests. */
+export function money(text: string, currencyCode = "CNY", scale = 2): MoneyDto {
+  return { text, currencyCode, scale };
+}
+
+/** Builds a complete dashboard payload for tests. */
+export function dashboardData(overrides: Partial<DashboardDto> = {}): DashboardDto {
+  const zero = money("0.00");
+  return {
+    month: "2026-11",
+    reportingCurrency: "CNY",
+    availableCurrencies: ["CNY"],
+    accountBalances: [],
+    netBalance: zero,
+    monthlyIncome: zero,
+    monthlyExpense: zero,
+    monthlySavings: zero,
+    days: [],
+    missingRate: null,
+    ...overrides,
+  };
+}
+
+/** Builds a category ranking payload for tests. */
+export function categoryRankingData(
+  overrides: Partial<CategoryRankingDto> = {},
+): CategoryRankingDto {
+  return {
+    month: "2026-11",
+    kind: "expense",
+    reportingCurrency: "CNY",
+    total: money("0.00"),
+    rows: [],
+    missingRate: null,
+    ...overrides,
+  };
+}
+
 /** An in-memory IPC client for the interface tests. */
 export function createFakeIpc(initial?: Partial<FakeState>): FakeIpc {
   const state: FakeState = {
@@ -124,6 +174,13 @@ export function createFakeIpc(initial?: Partial<FakeState>): FakeIpc {
     masterDataError: null,
     transactions: [],
     transactionError: null,
+    dashboard: null,
+    dashboardError: null,
+    categoryRanking: null,
+    rankingError: null,
+    lastDashboardMonth: null,
+    lastRankingMonth: null,
+    lastRankingKind: null,
     ...initial,
   };
 
@@ -602,6 +659,26 @@ export function createFakeIpc(initial?: Partial<FakeState>): FakeIpc {
         transaction.id === restored.id ? restored : transaction,
       );
       return restored;
+    },
+    dashboardLoad: async (request: DashboardRequestDto) => {
+      state.lastDashboardMonth = request.month ?? "";
+      if (state.dashboardError) {
+        throw state.dashboardError;
+      }
+      requireLedger();
+      return state.dashboard ?? dashboardData({ month: request.month || "2026-11" });
+    },
+    reportCategoryRanking: async (request: CategoryRankingRequestDto) => {
+      state.lastRankingMonth = request.month ?? "";
+      state.lastRankingKind = request.kind;
+      if (state.rankingError) {
+        throw state.rankingError;
+      }
+      requireLedger();
+      return (
+        state.categoryRanking ??
+        categoryRankingData({ month: request.month || "2026-11", kind: request.kind })
+      );
     },
   };
 
