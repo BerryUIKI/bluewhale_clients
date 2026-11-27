@@ -270,6 +270,7 @@ clean data directory. The DevTools Protocol drove the interface:
 | `cargo test --workspace`                                | 52 tests passed: 10 IPC, 3 platform, and 39 runtime, including 11 transaction tests.                                        |
 | `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source. |
 | `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                 |
+| GitHub Actions on `e1e85fa`                             | UI CI passed in 33 s; Windows desktop CI passed in 3 min 26 s; Core CI on `e4df9b7` passed in 1 min 47 s.                   |
 
 ### Live transactions check
 
