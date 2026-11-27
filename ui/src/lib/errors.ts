@@ -31,6 +31,17 @@ const KNOWN_MESSAGE_KEYS: ReadonlySet<string> = new Set([
   "errors.ledger_not_initialized",
   "errors.ledger_key_store",
   "errors.ledger_internal",
+  "errors.master_data_no_ledger",
+  "errors.master_data_name",
+  "errors.master_data_color",
+  "errors.master_data_currency",
+  "errors.master_data_reference",
+  "errors.master_data_amount",
+  "errors.master_data_not_found",
+  "errors.master_data_group_archived",
+  "errors.master_data_kind_mismatch",
+  "errors.master_data_not_initialized",
+  "errors.master_data_internal",
 ]);
 
 /**

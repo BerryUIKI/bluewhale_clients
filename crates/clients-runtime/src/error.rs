@@ -104,3 +104,67 @@ impl From<core_domain::RepositoryError> for LedgerError {
         Self::Internal
     }
 }
+
+/// A failure from a master-data operation.
+///
+/// The variants are stable reasons; the IPC layer maps each to an error code
+/// and a message key. None of them carry financial data.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MasterDataError {
+    /// No ledger is open, so there is no database to read or write.
+    NoActiveLedger,
+    /// A required display name is empty.
+    InvalidName,
+    /// A tag color is not a `#RRGGBB` value.
+    InvalidColor,
+    /// The account currency is unknown.
+    InvalidCurrency,
+    /// A supplied identifier or reference cannot be used.
+    InvalidReference,
+    /// The opening balance is not a valid amount for the currency.
+    InvalidAmount,
+    /// The record does not exist.
+    NotFound,
+    /// The target group is archived and cannot accept new members.
+    ArchivedGroup,
+    /// The category's kind does not match its group.
+    KindMismatch,
+    /// The ledger database has not been initialized.
+    NotInitialized,
+    /// An unexpected local failure occurred.
+    Internal,
+}
+
+impl MasterDataError {
+    /// Returns the stable message key the interface localizes.
+    #[must_use]
+    pub const fn message_key(&self) -> &'static str {
+        match self {
+            Self::NoActiveLedger => "errors.master_data_no_ledger",
+            Self::InvalidName => "errors.master_data_name",
+            Self::InvalidColor => "errors.master_data_color",
+            Self::InvalidCurrency => "errors.master_data_currency",
+            Self::InvalidReference => "errors.master_data_reference",
+            Self::InvalidAmount => "errors.master_data_amount",
+            Self::NotFound => "errors.master_data_not_found",
+            Self::ArchivedGroup => "errors.master_data_group_archived",
+            Self::KindMismatch => "errors.master_data_kind_mismatch",
+            Self::NotInitialized => "errors.master_data_not_initialized",
+            Self::Internal => "errors.master_data_internal",
+        }
+    }
+}
+
+impl fmt::Display for MasterDataError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.message_key())
+    }
+}
+
+impl std::error::Error for MasterDataError {}
+
+impl From<core_domain::RepositoryError> for MasterDataError {
+    fn from(_: core_domain::RepositoryError) -> Self {
+        Self::Internal
+    }
+}

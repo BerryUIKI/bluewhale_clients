@@ -585,6 +585,7 @@ name = "clients-ipc"
 version = "0.1.0"
 dependencies = [
  "clients-runtime",
+ "core-domain",
  "jiff 1.0.3",
  "serde",
  "serde_json",

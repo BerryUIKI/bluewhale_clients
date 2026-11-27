@@ -20,10 +20,15 @@ All notable changes to the Bluewhale clients are documented in this file. The pr
 - Test coverage for the ledger work: 16 runtime tests (creation, reopening, switching, missing database, missing key, unreadable key, wrong key, non-destructive removal, input validation, corrupt catalog) and 36 interface tests, plus a live WebView2 check of setup, switching, store recovery, and removal.
 - Recorded `blessing` and `WTFPL` licenses for the bundled SQLCipher sources and allowed the core git source in `deny.toml`.
 - A single-instance guard for the desktop application: a second launch focuses the running window and exits, so two processes cannot write the same data directory.
+- Phase 3.3 master data: accounts with an optional opening balance, tags, a household-member owner, a custom group, a note, and hidden and net-worth flags; custom account groups; two-level expense and income categories and their groups; tags with colors and descriptions; and counterparties with three kinds. Every record supports create, edit, archive, and restore, and archived records stay visible behind a show-archived toggle.
+- `clients-runtime` master-data service: one snapshot read plus mutations composed from the approved core use cases, with append-only manual order, archived records kept in the snapshot, and typed errors for validation, missing records, archived groups, and kind mismatches.
+- `clients-ipc` master-data commands: `master_data`, `account_create`, `account_update`, `account_group_create`, `account_group_update`, `category_group_create`, `category_group_update`, `category_create`, `category_update`, `tag_create`, `tag_update`, `counterparty_create`, and `counterparty_update`, with DTOs for every record and request. The bindings were regenerated and the drift test covers them.
+- Interface master-data screens with accessible modal forms (Radix Dialog, React Hook Form, Zod), a reporting-currency default for new accounts, navigation entries, and complete English and Simplified Chinese resources.
+- Test coverage for the master-data work: 11 runtime tests, IPC error-mapping and enum round-trip tests, and 17 interface tests, plus a live WebView2 check of creation, archiving, restoring, and persistence after reload.
 
 ### Changed
 
-- Repository status is pre-alpha. Phase 3.2 is complete; the Android application and the ledger features beyond setup are not implemented yet.
+- Repository status is pre-alpha. Phase 3.3 is complete; transactions, reports, sync, the Android application, and the ledger features beyond master data are not implemented yet.
 - The Rust workspace now builds the core persistence crate with vendored SQLCipher and OpenSSL, so cargo commands need the native Windows Perl and `nmake` environment.
 
 ### Security

@@ -55,9 +55,296 @@ export const commands = {
 	 *  Returns [`CommandError`] when the application state is unavailable.
 	 */
 	ledgerActiveProfile: (options?: InvokeOptions) => typedError<ActiveLedgerProfileDto | null, CommandError_Serialize>(__TAURI_INVOKE("ledger_active_profile", undefined, options)),
+	/**
+	 *  Returns every master-data record of the open ledger.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when no ledger is open or a record cannot be read.
+	 */
+	masterData: (options?: InvokeOptions) => typedError<MasterDataDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("master_data", undefined, options)),
+	/**
+	 *  Creates an account and its optional opening balance.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	accountCreate: (request: AccountCreateRequestDto_Deserialize, options?: InvokeOptions) => typedError<AccountDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("account_create", { request }, options)),
+	/**
+	 *  Updates an account without changing its currency.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	accountUpdate: (request: AccountUpdateRequestDto_Deserialize, options?: InvokeOptions) => typedError<AccountDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("account_update", { request }, options)),
+	/**
+	 *  Creates an account group.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	accountGroupCreate: (request: AccountGroupCreateRequestDto, options?: InvokeOptions) => typedError<AccountGroupDto, CommandError_Serialize>(__TAURI_INVOKE("account_group_create", { request }, options)),
+	/**
+	 *  Updates an account group.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	accountGroupUpdate: (request: AccountGroupUpdateRequestDto, options?: InvokeOptions) => typedError<AccountGroupDto, CommandError_Serialize>(__TAURI_INVOKE("account_group_update", { request }, options)),
+	/**
+	 *  Creates a category group.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	categoryGroupCreate: (request: CategoryGroupCreateRequestDto, options?: InvokeOptions) => typedError<CategoryGroupDto, CommandError_Serialize>(__TAURI_INVOKE("category_group_create", { request }, options)),
+	/**
+	 *  Updates a category group.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	categoryGroupUpdate: (request: CategoryGroupUpdateRequestDto, options?: InvokeOptions) => typedError<CategoryGroupDto, CommandError_Serialize>(__TAURI_INVOKE("category_group_update", { request }, options)),
+	/**
+	 *  Creates a leaf category.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	categoryCreate: (request: CategoryCreateRequestDto_Deserialize, options?: InvokeOptions) => typedError<CategoryDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("category_create", { request }, options)),
+	/**
+	 *  Updates a leaf category.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	categoryUpdate: (request: CategoryUpdateRequestDto_Deserialize, options?: InvokeOptions) => typedError<CategoryDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("category_update", { request }, options)),
+	/**
+	 *  Creates a tag.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	tagCreate: (request: TagCreateRequestDto_Deserialize, options?: InvokeOptions) => typedError<TagDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("tag_create", { request }, options)),
+	/**
+	 *  Updates a tag.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	tagUpdate: (request: TagUpdateRequestDto_Deserialize, options?: InvokeOptions) => typedError<TagDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("tag_update", { request }, options)),
+	/**
+	 *  Creates a counterparty.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	counterpartyCreate: (request: CounterpartyCreateRequestDto, options?: InvokeOptions) => typedError<CounterpartyDto, CommandError_Serialize>(__TAURI_INVOKE("counterparty_create", { request }, options)),
+	/**
+	 *  Updates a counterparty.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	counterpartyUpdate: (request: CounterpartyUpdateRequestDto, options?: InvokeOptions) => typedError<CounterpartyDto, CommandError_Serialize>(__TAURI_INVOKE("counterparty_update", { request }, options)),
 };
 
 /* Types */
+/**  A request to create an account. */
+export type AccountCreateRequestDto = AccountCreateRequestDto_Serialize | AccountCreateRequestDto_Deserialize;
+
+/**  A request to create an account. */
+export type AccountCreateRequestDto_Deserialize = {
+	/**  The display name. */
+	name: string,
+	/**  The asset type. */
+	assetType: AssetTypeDto,
+	/**  The native currency code. */
+	currencyCode: string,
+	/**  The optional opening balance amount text. */
+	openingBalanceText?: string | null,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The owning counterparty identity. */
+	ownerId?: string | null,
+	/**  The containing account group identity. */
+	customGroupId?: string | null,
+	/**  The free-form note. */
+	note: string,
+	/**  Whether the account is hidden from the main list. */
+	isHidden: boolean,
+	/**  Whether the account contributes to net worth. */
+	isIncludedInNetWorth: boolean,
+};
+
+/**  A request to create an account. */
+export type AccountCreateRequestDto_Serialize = {
+	/**  The display name. */
+	name: string,
+	/**  The asset type. */
+	assetType: AssetTypeDto,
+	/**  The native currency code. */
+	currencyCode: string,
+	/**  The optional opening balance amount text. */
+	openingBalanceText: string | null,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The owning counterparty identity. */
+	ownerId: string | null,
+	/**  The containing account group identity. */
+	customGroupId: string | null,
+	/**  The free-form note. */
+	note: string,
+	/**  Whether the account is hidden from the main list. */
+	isHidden: boolean,
+	/**  Whether the account contributes to net worth. */
+	isIncludedInNetWorth: boolean,
+};
+
+/**  One account. */
+export type AccountDto = AccountDto_Serialize | AccountDto_Deserialize;
+
+/**  One account. */
+export type AccountDto_Deserialize = {
+	/**  The account identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The asset type. */
+	assetType: AssetTypeDto,
+	/**  The native currency code. */
+	currencyCode: string,
+	/**  The tags attached to the account. */
+	tagIds: string[],
+	/**  The counterparty that owns the account. */
+	ownerId?: string | null,
+	/**  The custom group that contains the account. */
+	customGroupId?: string | null,
+	/**  The free-form note. */
+	note: string,
+	/**  Whether the account is hidden from the main list. */
+	isHidden: boolean,
+	/**  Whether the account contributes to net worth. */
+	isIncludedInNetWorth: boolean,
+	/**  Whether the account is archived. */
+	isArchived: boolean,
+};
+
+/**  One account. */
+export type AccountDto_Serialize = {
+	/**  The account identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The asset type. */
+	assetType: AssetTypeDto,
+	/**  The native currency code. */
+	currencyCode: string,
+	/**  The tags attached to the account. */
+	tagIds: string[],
+	/**  The counterparty that owns the account. */
+	ownerId: string | null,
+	/**  The custom group that contains the account. */
+	customGroupId: string | null,
+	/**  The free-form note. */
+	note: string,
+	/**  Whether the account is hidden from the main list. */
+	isHidden: boolean,
+	/**  Whether the account contributes to net worth. */
+	isIncludedInNetWorth: boolean,
+	/**  Whether the account is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to create an account group. */
+export type AccountGroupCreateRequestDto = {
+	/**  The display name. */
+	name: string,
+};
+
+/**  One custom account group. */
+export type AccountGroupDto = {
+	/**  The group identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  Whether the group is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to update an account group. */
+export type AccountGroupUpdateRequestDto = {
+	/**  The group identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  Whether the group is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to update an account. */
+export type AccountUpdateRequestDto = AccountUpdateRequestDto_Serialize | AccountUpdateRequestDto_Deserialize;
+
+/**  A request to update an account. */
+export type AccountUpdateRequestDto_Deserialize = {
+	/**  The account identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The asset type. */
+	assetType: AssetTypeDto,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The owning counterparty identity. */
+	ownerId?: string | null,
+	/**  The containing account group identity. */
+	customGroupId?: string | null,
+	/**  The free-form note. */
+	note: string,
+	/**  Whether the account is hidden from the main list. */
+	isHidden: boolean,
+	/**  Whether the account contributes to net worth. */
+	isIncludedInNetWorth: boolean,
+	/**  Whether the account is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to update an account. */
+export type AccountUpdateRequestDto_Serialize = {
+	/**  The account identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The asset type. */
+	assetType: AssetTypeDto,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The owning counterparty identity. */
+	ownerId: string | null,
+	/**  The containing account group identity. */
+	customGroupId: string | null,
+	/**  The free-form note. */
+	note: string,
+	/**  Whether the account is hidden from the main list. */
+	isHidden: boolean,
+	/**  Whether the account contributes to net worth. */
+	isIncludedInNetWorth: boolean,
+	/**  Whether the account is archived. */
+	isArchived: boolean,
+};
+
 /**  The profile of the open ledger. */
 export type ActiveLedgerProfileDto = {
 	/**  The ledger identity. */
@@ -82,6 +369,135 @@ export type AppInfo = {
 	os: string,
 	/**  The processor architecture, such as `x86_64` or `aarch64`. */
 	arch: string,
+};
+
+/**  The kind of asset account. */
+export type AssetTypeDto = 
+/**  Physical cash. */
+"cash" | 
+/**  A checking or current account. */
+"checking" | 
+/**  A savings account. */
+"savings" | 
+/**  Stored value such as a transit or gift card. */
+"stored_value";
+
+/**  A request to create a leaf category. */
+export type CategoryCreateRequestDto = CategoryCreateRequestDto_Serialize | CategoryCreateRequestDto_Deserialize;
+
+/**  A request to create a leaf category. */
+export type CategoryCreateRequestDto_Deserialize = {
+	/**  The display name. */
+	name: string,
+	/**  The category kind. */
+	kind: CategoryKindDto,
+	/**  The optional containing group. */
+	groupId?: string | null,
+};
+
+/**  A request to create a leaf category. */
+export type CategoryCreateRequestDto_Serialize = {
+	/**  The display name. */
+	name: string,
+	/**  The category kind. */
+	kind: CategoryKindDto,
+	/**  The optional containing group. */
+	groupId: string | null,
+};
+
+/**  One leaf category. */
+export type CategoryDto = CategoryDto_Serialize | CategoryDto_Deserialize;
+
+/**  One leaf category. */
+export type CategoryDto_Deserialize = {
+	/**  The category identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The category kind. */
+	kind: CategoryKindDto,
+	/**  The optional containing group. */
+	groupId?: string | null,
+	/**  Whether the category is archived. */
+	isArchived: boolean,
+};
+
+/**  One leaf category. */
+export type CategoryDto_Serialize = {
+	/**  The category identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The category kind. */
+	kind: CategoryKindDto,
+	/**  The optional containing group. */
+	groupId: string | null,
+	/**  Whether the category is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to create a category group. */
+export type CategoryGroupCreateRequestDto = {
+	/**  The display name. */
+	name: string,
+	/**  The kind shared by the group's categories. */
+	kind: CategoryKindDto,
+};
+
+/**  One category group. */
+export type CategoryGroupDto = {
+	/**  The group identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The kind shared by the group's categories. */
+	kind: CategoryKindDto,
+	/**  Whether the group is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to update a category group. */
+export type CategoryGroupUpdateRequestDto = {
+	/**  The group identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  Whether the group is archived. */
+	isArchived: boolean,
+};
+
+/**  Whether a category classifies spending or income. */
+export type CategoryKindDto = 
+/**  Spending categories. */
+"expense" | 
+/**  Income categories. */
+"income";
+
+/**  A request to update a leaf category. */
+export type CategoryUpdateRequestDto = CategoryUpdateRequestDto_Serialize | CategoryUpdateRequestDto_Deserialize;
+
+/**  A request to update a leaf category. */
+export type CategoryUpdateRequestDto_Deserialize = {
+	/**  The category identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The optional containing group. */
+	groupId?: string | null,
+	/**  Whether the category is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to update a leaf category. */
+export type CategoryUpdateRequestDto_Serialize = {
+	/**  The category identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The optional containing group. */
+	groupId: string | null,
+	/**  Whether the category is archived. */
+	isArchived: boolean,
 };
 
 /**  The typed error returned across the IPC boundary. */
@@ -128,6 +544,47 @@ export type CommandError_Serialize = {
 	messageKey: string,
 	/**  Optional field-level details, for form feedback. */
 	details: CommandErrorDetail_Serialize[] | null,
+};
+
+/**  A request to create a counterparty. */
+export type CounterpartyCreateRequestDto = {
+	/**  The kind. */
+	kind: CounterpartyKindDto,
+	/**  The display name. */
+	name: string,
+};
+
+/**  One counterparty. */
+export type CounterpartyDto = {
+	/**  The counterparty identity. */
+	id: string,
+	/**  The kind. */
+	kind: CounterpartyKindDto,
+	/**  The display name. */
+	name: string,
+	/**  Whether the counterparty is archived. */
+	isArchived: boolean,
+};
+
+/**  The kind of counterparty. */
+export type CounterpartyKindDto = 
+/**  A member of the household. */
+"household_member" | 
+/**  A person outside the household. */
+"person" | 
+/**  An organization. */
+"organization";
+
+/**  A request to update a counterparty. */
+export type CounterpartyUpdateRequestDto = {
+	/**  The counterparty identity. */
+	id: string,
+	/**  The kind. */
+	kind: CounterpartyKindDto,
+	/**  The display name. */
+	name: string,
+	/**  Whether the counterparty is archived. */
+	isArchived: boolean,
 };
 
 /**  A request to create a ledger. */
@@ -258,12 +715,132 @@ export type LedgerUnavailableDto =
 /**  Another local failure. */
 "unknown";
 
+/**  Every master-data record of the open ledger. */
+export type MasterDataDto = MasterDataDto_Serialize | MasterDataDto_Deserialize;
+
+/**  Every master-data record of the open ledger. */
+export type MasterDataDto_Deserialize = {
+	/**  Accounts in manual order. */
+	accounts: AccountDto_Deserialize[],
+	/**  Custom account groups in manual order. */
+	accountGroups: AccountGroupDto[],
+	/**  Category groups in manual order. */
+	categoryGroups: CategoryGroupDto[],
+	/**  Leaf categories in manual order. */
+	categories: CategoryDto_Deserialize[],
+	/**  Tags in manual order. */
+	tags: TagDto_Deserialize[],
+	/**  Counterparties in manual order. */
+	counterparties: CounterpartyDto[],
+};
+
+/**  Every master-data record of the open ledger. */
+export type MasterDataDto_Serialize = {
+	/**  Accounts in manual order. */
+	accounts: AccountDto_Serialize[],
+	/**  Custom account groups in manual order. */
+	accountGroups: AccountGroupDto[],
+	/**  Category groups in manual order. */
+	categoryGroups: CategoryGroupDto[],
+	/**  Leaf categories in manual order. */
+	categories: CategoryDto_Serialize[],
+	/**  Tags in manual order. */
+	tags: TagDto_Serialize[],
+	/**  Counterparties in manual order. */
+	counterparties: CounterpartyDto[],
+};
+
 /**  The result of removing a ledger from this device. */
 export type RemovedLedgerDto = {
 	/**  The removed ledger identity. */
 	id: string,
 	/**  The directory that still holds the database and key files. */
 	dataPath: string,
+};
+
+/**  A request to create a tag. */
+export type TagCreateRequestDto = TagCreateRequestDto_Serialize | TagCreateRequestDto_Deserialize;
+
+/**  A request to create a tag. */
+export type TagCreateRequestDto_Deserialize = {
+	/**  The display name. */
+	name: string,
+	/**  The `#RRGGBB` color. */
+	colorHex: string,
+	/**  The optional description. */
+	description?: string | null,
+};
+
+/**  A request to create a tag. */
+export type TagCreateRequestDto_Serialize = {
+	/**  The display name. */
+	name: string,
+	/**  The `#RRGGBB` color. */
+	colorHex: string,
+	/**  The optional description. */
+	description: string | null,
+};
+
+/**  One tag. */
+export type TagDto = TagDto_Serialize | TagDto_Deserialize;
+
+/**  One tag. */
+export type TagDto_Deserialize = {
+	/**  The tag identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The `#RRGGBB` color. */
+	colorHex: string,
+	/**  The optional description. */
+	description?: string | null,
+	/**  Whether the tag is archived. */
+	isArchived: boolean,
+};
+
+/**  One tag. */
+export type TagDto_Serialize = {
+	/**  The tag identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The `#RRGGBB` color. */
+	colorHex: string,
+	/**  The optional description. */
+	description: string | null,
+	/**  Whether the tag is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to update a tag. */
+export type TagUpdateRequestDto = TagUpdateRequestDto_Serialize | TagUpdateRequestDto_Deserialize;
+
+/**  A request to update a tag. */
+export type TagUpdateRequestDto_Deserialize = {
+	/**  The tag identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The `#RRGGBB` color. */
+	colorHex: string,
+	/**  The optional description. */
+	description?: string | null,
+	/**  Whether the tag is archived. */
+	isArchived: boolean,
+};
+
+/**  A request to update a tag. */
+export type TagUpdateRequestDto_Serialize = {
+	/**  The tag identity. */
+	id: string,
+	/**  The display name. */
+	name: string,
+	/**  The `#RRGGBB` color. */
+	colorHex: string,
+	/**  The optional description. */
+	description: string | null,
+	/**  Whether the tag is archived. */
+	isArchived: boolean,
 };
 
 /* Tauri Specta runtime */

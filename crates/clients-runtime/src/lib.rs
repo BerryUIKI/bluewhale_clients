@@ -9,13 +9,21 @@ pub mod catalog;
 pub mod clock;
 pub mod error;
 pub mod ledger;
+pub mod master_data;
 
 pub use catalog::{CatalogStore, LedgerCatalog, LedgerDescriptor};
 pub use clock::{SystemClock, Uuidv7Source};
-pub use error::LedgerError;
+pub use error::{LedgerError, MasterDataError};
 pub use ledger::{
     ActiveLedgerProfile, CreateLedgerRequest, DefaultContent, LedgerList, LedgerService,
     LedgerStatus, LedgerSummary, LedgerUnavailable, RemovedLedger,
+};
+pub use master_data::{
+    AccountEntry, AccountGroupEntry, CategoryEntry, CategoryGroupEntry, CounterpartyEntry,
+    CreateAccountGroupInput, CreateAccountInput, CreateCategoryGroupInput, CreateCategoryInput,
+    CreateCounterpartyInput, CreateTagInput, MasterData, MasterDataStore, TagEntry,
+    UpdateAccountGroupInput, UpdateAccountInput, UpdateCategoryGroupInput, UpdateCategoryInput,
+    UpdateCounterpartyInput, UpdateTagInput,
 };
 
 /// Build and platform information the application shell displays.

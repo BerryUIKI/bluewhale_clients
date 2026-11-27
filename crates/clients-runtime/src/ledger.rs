@@ -255,6 +255,22 @@ impl LedgerService {
         self.active.as_ref().map(|open| &open.ledger)
     }
 
+    /// Runs `operation` against the open ledger database.
+    ///
+    /// # Errors
+    ///
+    /// Returns `unavailable` when no ledger is open, or the operation's error.
+    pub fn with_active_database<T, E>(
+        &self,
+        unavailable: E,
+        operation: impl FnOnce(&SqliteLedger) -> Result<T, E>,
+    ) -> Result<T, E> {
+        match self.active.as_ref() {
+            Some(open) => operation(&open.ledger),
+            None => Err(unavailable),
+        }
+    }
+
     /// Creates a ledger, initializes its database, and selects it.
     ///
     /// # Errors
@@ -615,6 +631,7 @@ fn hex(bytes: &[u8]) -> Zeroizing<String> {
 mod tests {
     use super::*;
     use crate::error::LedgerError;
+    use crate::error::MasterDataError;
 
     struct FakeProtector;
 
@@ -869,6 +886,17 @@ mod tests {
             Err(LedgerError::CatalogUnreadable { .. })
         ));
         assert_eq!(fs::read(&catalog_path).unwrap(), b"{not json");
+    }
+
+    #[test]
+    fn database_operations_require_an_open_ledger() {
+        let directory = tempfile::tempdir().unwrap();
+        let service = service(&directory);
+
+        assert_eq!(
+            service.with_active_database(MasterDataError::NoActiveLedger, |_| Ok(())),
+            Err(MasterDataError::NoActiveLedger)
+        );
     }
 
     #[test]

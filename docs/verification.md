@@ -87,7 +87,7 @@ production content security policy.
 - The six core crates are pinned from the public repository at
   `7e9cdefb1415f206c653ccc77b1241c9ea9bbce2`; `Cargo.lock` records the revision
   and [development/core-pin.md](development/core-pin.md) records the pin and the
-  intended `core-v0.1.0` tag.
+  annotated `v0.1.0` tag.
 - A device-local ledger catalog, per-ledger SQLCipher databases initialized
   through the core ledger use case, user-scoped DPAPI key protection, the ledger
   IPC commands, and the first-run setup, ledger manager, switcher, and overview
@@ -146,4 +146,90 @@ clean data directory. The DevTools Protocol drove the interface:
   the same data directory was not tested.
 - **Catalog repair:** a corrupt `catalog.json` surfaces the error with a retry
   and is never overwritten; automatic repair is not implemented.
+- **Android and release packaging:** unchanged from Phase 3.1.
+
+## Phase 3.3 master data (2026-11-27)
+
+### Changes
+
+- Accounts, custom account groups, two-level expense and income categories, tags,
+  and counterparties. Every record supports create, edit, archive, and restore;
+  archived records stay in the snapshot and the screens hide them behind a
+  show-archived toggle.
+- The master-data snapshot is one typed command (`master_data`); every mutation
+  is one command mapped to an approved core use case. New records append to the
+  manual order; the interface does not edit positions.
+- The account form collects an optional opening balance at creation, tags, a
+  household-member owner, a custom group, a note, and the hidden and net-worth
+  flags. The currency defaults to the ledger reporting currency and cannot
+  change after creation.
+- The interface adds accessible modal forms (Radix Dialog, React Hook Form,
+  Zod) and English and Simplified Chinese resources for every screen.
+
+### Commands and results
+
+| Command                                                 | Result                                                                                                                      |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                                          | Completed; added `@radix-ui/react-dialog` 1.3.1.                                                                            |
+| `pnpm format`, `pnpm lint`                              | Clean; 0 problems.                                                                                                          |
+| `pnpm typecheck`                                        | Clean for `@bluewhale/ipc` and `@bluewhale/ui`.                                                                             |
+| `pnpm test`                                             | 12 files, 53 tests passed.                                                                                                  |
+| `pnpm --filter @bluewhale/ui build`                     | 288 modules; JS 638.08 kB (193.74 kB gzip), CSS 21.55 kB (4.71 kB gzip). Vite reports one chunk above 500 kB.               |
+| `cargo fmt --all --check`                               | Clean.                                                                                                                      |
+| `cargo clippy --workspace --all-targets -- -D warnings` | Clean.                                                                                                                      |
+| `cargo test --workspace`                                | 38 tests passed: 7 IPC, 3 platform, and 28 runtime, including 11 master-data tests and 1 database-access test.              |
+| `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source. |
+| `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                 |
+
+### Live master-data check
+
+The final debug build was started with
+`BLUEWHALE_DATA_DIR=D:\dev\scratch\bw-p33c-20261127\data`,
+`WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9417`, and a
+clean data directory. The DevTools Protocol drove the interface:
+
+1. First-run setup creates `Household` with CNY and `Asia/Shanghai`.
+2. The Tags screen creates `Travel`; the Counterparties screen creates `Alex`
+   with the household-member kind.
+3. The Accounts screen creates `Main checking` with the checking type, an
+   opening balance of `1250.50`, the `Travel` tag, and `Alex` as owner. The
+   account row shows Checking, CNY, Travel, and Owner: Alex; the currency
+   defaulted to the ledger reporting currency.
+4. Archiving hides the account; Show archived reveals it with the Archived
+   badge; Restore returns it.
+5. The Categories screen creates the `Essentials` expense group and the
+   `Groceries` category inside it; archiving and restoring the category works.
+6. Reloading the window keeps the ledger active and the account, tag,
+   counterparty, group, and category present.
+7. `catalog.json` holds schema version 1, the ledger descriptor, and the active
+   id, with no key material. `ledger.key` is a 262-byte DPAPI blob starting
+   `01 00 00 00`; `ledger.db` does not start with the SQLite header.
+
+### Observations
+
+- The Tauri CLI build is required for the live check: a plain `cargo build`
+  debug binary loaded the Vite development URL because Tauri treats a debug
+  build as development, while `pnpm --filter @bluewhale/desktop build:debug`
+  embeds `ui/dist`. CI uses the CLI build.
+- The account form originally defaulted to USD; the live check showed a CNY
+  ledger creating a USD account. The form now defaults to the active ledger's
+  reporting currency.
+- The owner list offers household members only, matching the account owner rule
+  in the data model.
+- An archived group cannot accept members in the core. Editing a category or
+  account whose group is archived shows a hint, defaults to no group, and lets
+  the save move the record out of the archived group.
+
+### Not verified in this environment
+
+- **Release bundles and installers:** only the debug build was produced; MSI and
+  NSIS packaging belong to P3.8.
+- **Master data in transactions and reports:** assigning categories, tags, and
+  counterparties to entries belongs to P3.4 and P3.5.
+- **Manual reordering:** new records append to the manual order; drag or move
+  controls are not implemented.
+- **Accessibility automation and Chinese screens:** dialog focus management and
+  native controls are in place, but no axe or NVDA pass was run, and the Chinese
+  screens were not reviewed manually; locale key parity and non-empty messages
+  are tested.
 - **Android and release packaging:** unchanged from Phase 3.1.

@@ -1,11 +1,30 @@
 import { createContext, useContext } from "react";
 import type {
+  AccountCreateRequestDto,
+  AccountDto,
+  AccountGroupCreateRequestDto,
+  AccountGroupDto,
+  AccountGroupUpdateRequestDto,
+  AccountUpdateRequestDto,
   ActiveLedgerProfileDto,
   AppInfo,
+  CategoryCreateRequestDto,
+  CategoryDto,
+  CategoryGroupCreateRequestDto,
+  CategoryGroupDto,
+  CategoryGroupUpdateRequestDto,
+  CategoryUpdateRequestDto,
+  CounterpartyCreateRequestDto,
+  CounterpartyDto,
+  CounterpartyUpdateRequestDto,
   CreateLedgerRequestDto,
   LedgerListDto,
   LedgerSummaryDto,
+  MasterDataDto,
   RemovedLedgerDto,
+  TagCreateRequestDto,
+  TagDto,
+  TagUpdateRequestDto,
 } from "@bluewhale/ipc";
 
 /** The subset of the IPC surface the interface depends on. */
@@ -22,6 +41,32 @@ export interface IpcClient {
   ledgerRemove(ledgerId: string): Promise<RemovedLedgerDto>;
   /** Returns the profile of the open ledger, if any. */
   ledgerActiveProfile(): Promise<ActiveLedgerProfileDto | null>;
+  /** Returns every master-data record of the open ledger. */
+  masterData(): Promise<MasterDataDto>;
+  /** Creates an account and its optional opening balance. */
+  accountCreate(request: AccountCreateRequestDto): Promise<AccountDto>;
+  /** Updates an account without changing its currency. */
+  accountUpdate(request: AccountUpdateRequestDto): Promise<AccountDto>;
+  /** Creates an account group. */
+  accountGroupCreate(request: AccountGroupCreateRequestDto): Promise<AccountGroupDto>;
+  /** Updates an account group. */
+  accountGroupUpdate(request: AccountGroupUpdateRequestDto): Promise<AccountGroupDto>;
+  /** Creates a category group. */
+  categoryGroupCreate(request: CategoryGroupCreateRequestDto): Promise<CategoryGroupDto>;
+  /** Updates a category group. */
+  categoryGroupUpdate(request: CategoryGroupUpdateRequestDto): Promise<CategoryGroupDto>;
+  /** Creates a leaf category. */
+  categoryCreate(request: CategoryCreateRequestDto): Promise<CategoryDto>;
+  /** Updates a leaf category. */
+  categoryUpdate(request: CategoryUpdateRequestDto): Promise<CategoryDto>;
+  /** Creates a tag. */
+  tagCreate(request: TagCreateRequestDto): Promise<TagDto>;
+  /** Updates a tag. */
+  tagUpdate(request: TagUpdateRequestDto): Promise<TagDto>;
+  /** Creates a counterparty. */
+  counterpartyCreate(request: CounterpartyCreateRequestDto): Promise<CounterpartyDto>;
+  /** Updates a counterparty. */
+  counterpartyUpdate(request: CounterpartyUpdateRequestDto): Promise<CounterpartyDto>;
 }
 
 /** The injection point for the IPC client. */

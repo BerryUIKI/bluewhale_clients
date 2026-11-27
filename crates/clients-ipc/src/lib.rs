@@ -9,14 +9,26 @@
 pub mod commands;
 mod error;
 pub mod ledger;
+pub mod master_data;
 
 pub use commands::{
-    app_info, ledger_active_profile, ledger_create, ledger_list, ledger_remove, ledger_switch,
+    account_create, account_group_create, account_group_update, account_update, app_info,
+    category_create, category_group_create, category_group_update, category_update,
+    counterparty_create, counterparty_update, ledger_active_profile, ledger_create, ledger_list,
+    ledger_remove, ledger_switch, master_data, tag_create, tag_update,
 };
 pub use error::{CommandError, CommandErrorDetail, ErrorCode};
 pub use ledger::{
     ActiveLedgerProfileDto, AppState, CreateLedgerRequestDto, DefaultContentDto, LedgerListDto,
     LedgerStatusDto, LedgerSummaryDto, LedgerUnavailableDto, RemovedLedgerDto,
+};
+pub use master_data::{
+    AccountCreateRequestDto, AccountDto, AccountGroupCreateRequestDto, AccountGroupDto,
+    AccountGroupUpdateRequestDto, AccountUpdateRequestDto, AssetTypeDto, CategoryCreateRequestDto,
+    CategoryDto, CategoryGroupCreateRequestDto, CategoryGroupDto, CategoryGroupUpdateRequestDto,
+    CategoryKindDto, CategoryUpdateRequestDto, CounterpartyCreateRequestDto, CounterpartyDto,
+    CounterpartyKindDto, CounterpartyUpdateRequestDto, MasterDataDto, TagCreateRequestDto, TagDto,
+    TagUpdateRequestDto,
 };
 
 /// Build and platform information returned by the `app_info` command.
@@ -56,6 +68,19 @@ pub fn builder() -> tauri_specta::Builder<tauri::Wry> {
             commands::ledger_switch,
             commands::ledger_remove,
             commands::ledger_active_profile,
+            commands::master_data,
+            commands::account_create,
+            commands::account_update,
+            commands::account_group_create,
+            commands::account_group_update,
+            commands::category_group_create,
+            commands::category_group_update,
+            commands::category_create,
+            commands::category_update,
+            commands::tag_create,
+            commands::tag_update,
+            commands::counterparty_create,
+            commands::counterparty_update,
         ])
         .error_handling(tauri_specta::ErrorHandlingMode::Result)
 }

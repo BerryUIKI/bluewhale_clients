@@ -24,6 +24,10 @@ export function AppShell() {
             className="flex gap-1 px-3 pb-3 md:flex-col md:pb-0"
           >
             <NavItem to="/" end label={t("shell.home")} />
+            <NavItem to="/accounts" label={t("shell.accounts")} />
+            <NavItem to="/categories" label={t("shell.categories")} />
+            <NavItem to="/tags" label={t("shell.tags")} />
+            <NavItem to="/counterparties" label={t("shell.counterparties")} />
             <NavItem to="/ledgers" label={t("shell.ledgers")} />
             <NavItem to="/settings" label={t("shell.settings")} />
           </nav>

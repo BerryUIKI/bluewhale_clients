@@ -3,9 +3,19 @@
 
 use tauri::{AppHandle, State};
 
+use clients_runtime::{MasterDataError, master_data};
+
 use crate::ledger::{
     ActiveLedgerProfileDto, AppState, CreateLedgerRequestDto, LedgerListDto, LedgerSummaryDto,
     RemovedLedgerDto, map_ledger_error,
+};
+use crate::master_data::{
+    AccountCreateRequestDto, AccountDto, AccountGroupCreateRequestDto, AccountGroupDto,
+    AccountGroupUpdateRequestDto, AccountUpdateRequestDto, CategoryCreateRequestDto, CategoryDto,
+    CategoryGroupCreateRequestDto, CategoryGroupDto, CategoryGroupUpdateRequestDto,
+    CategoryUpdateRequestDto, CounterpartyCreateRequestDto, CounterpartyDto,
+    CounterpartyUpdateRequestDto, MasterDataDto, TagCreateRequestDto, TagDto, TagUpdateRequestDto,
+    map_master_data_error,
 };
 use crate::{AppInfo, CommandError};
 
@@ -108,4 +118,259 @@ pub fn ledger_active_profile(
 ) -> Result<Option<ActiveLedgerProfileDto>, CommandError> {
     let service = state.lock()?;
     Ok(service.active_profile().map(Into::into))
+}
+
+/// Returns every master-data record of the open ledger.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] when no ledger is open or a record cannot be read.
+#[tauri::command]
+#[specta::specta]
+pub fn master_data(state: State<'_, AppState>) -> Result<MasterDataDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, master_data::load)
+        .map(MasterDataDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Creates an account and its optional opening balance.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn account_create(
+    state: State<'_, AppState>,
+    request: AccountCreateRequestDto,
+) -> Result<AccountDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::create_account(database, request.into())
+        })
+        .map(AccountDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Updates an account without changing its currency.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn account_update(
+    state: State<'_, AppState>,
+    request: AccountUpdateRequestDto,
+) -> Result<AccountDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::update_account(database, request.into())
+        })
+        .map(AccountDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Creates an account group.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn account_group_create(
+    state: State<'_, AppState>,
+    request: AccountGroupCreateRequestDto,
+) -> Result<AccountGroupDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::create_account_group(database, request.into())
+        })
+        .map(AccountGroupDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Updates an account group.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn account_group_update(
+    state: State<'_, AppState>,
+    request: AccountGroupUpdateRequestDto,
+) -> Result<AccountGroupDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::update_account_group(database, request.into())
+        })
+        .map(AccountGroupDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Creates a category group.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn category_group_create(
+    state: State<'_, AppState>,
+    request: CategoryGroupCreateRequestDto,
+) -> Result<CategoryGroupDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::create_category_group(database, request.into())
+        })
+        .map(CategoryGroupDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Updates a category group.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn category_group_update(
+    state: State<'_, AppState>,
+    request: CategoryGroupUpdateRequestDto,
+) -> Result<CategoryGroupDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::update_category_group(database, request.into())
+        })
+        .map(CategoryGroupDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Creates a leaf category.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn category_create(
+    state: State<'_, AppState>,
+    request: CategoryCreateRequestDto,
+) -> Result<CategoryDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::create_category(database, request.into())
+        })
+        .map(CategoryDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Updates a leaf category.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn category_update(
+    state: State<'_, AppState>,
+    request: CategoryUpdateRequestDto,
+) -> Result<CategoryDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::update_category(database, request.into())
+        })
+        .map(CategoryDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Creates a tag.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn tag_create(
+    state: State<'_, AppState>,
+    request: TagCreateRequestDto,
+) -> Result<TagDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::create_tag(database, request.into())
+        })
+        .map(TagDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Updates a tag.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn tag_update(
+    state: State<'_, AppState>,
+    request: TagUpdateRequestDto,
+) -> Result<TagDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::update_tag(database, request.into())
+        })
+        .map(TagDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Creates a counterparty.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn counterparty_create(
+    state: State<'_, AppState>,
+    request: CounterpartyCreateRequestDto,
+) -> Result<CounterpartyDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::create_counterparty(database, request.into())
+        })
+        .map(CounterpartyDto::from)
+        .map_err(map_master_data_error)
+}
+
+/// Updates a counterparty.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn counterparty_update(
+    state: State<'_, AppState>,
+    request: CounterpartyUpdateRequestDto,
+) -> Result<CounterpartyDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(MasterDataError::NoActiveLedger, |database| {
+            master_data::update_counterparty(database, request.into())
+        })
+        .map(CounterpartyDto::from)
+        .map_err(map_master_data_error)
 }
