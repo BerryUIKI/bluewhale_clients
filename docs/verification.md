@@ -355,19 +355,20 @@ clean data directory. The DevTools Protocol drove the interface:
 
 ### Commands and results
 
-| Command                                                 | Result                                                                                                                      |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm format`, `pnpm lint`                              | Clean; 0 problems.                                                                                                          |
-| `pnpm typecheck`                                        | Clean for `@bluewhale/ipc` and `@bluewhale/ui`.                                                                             |
-| `pnpm test`                                             | 14 files, 68 tests passed.                                                                                                  |
-| `pnpm --filter @bluewhale/ui build`                     | 305 modules; JS 688.69 kB (204.37 kB gzip), CSS 24.38 kB (5.23 kB gzip). Vite reports one chunk above 500 kB.               |
-| `cargo fmt --all --check`                               | Clean.                                                                                                                      |
-| `cargo clippy --workspace --all-targets -- -D warnings` | Clean.                                                                                                                      |
-| `cargo test --workspace`                                | 59 tests passed: 12 IPC, 3 platform, and 44 runtime, including 5 dashboard tests.                                           |
-| `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source. |
-| Core `cargo test --workspace` on `184f288`              | Passed, including four new category-ranking tests.                                                                          |
-| Core `cargo clippy`, `cargo deny`, `cargo doc`          | Clean.                                                                                                                      |
-| `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                 |
+| Command                                                 | Result                                                                                                                                                        |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format`, `pnpm lint`                              | Clean; 0 problems.                                                                                                                                            |
+| `pnpm typecheck`                                        | Clean for `@bluewhale/ipc` and `@bluewhale/ui`.                                                                                                               |
+| `pnpm test`                                             | 14 files, 68 tests passed.                                                                                                                                    |
+| `pnpm --filter @bluewhale/ui build`                     | 305 modules; JS 688.69 kB (204.37 kB gzip), CSS 24.38 kB (5.23 kB gzip). Vite reports one chunk above 500 kB.                                                 |
+| `cargo fmt --all --check`                               | Clean.                                                                                                                                                        |
+| `cargo clippy --workspace --all-targets -- -D warnings` | Clean.                                                                                                                                                        |
+| `cargo test --workspace`                                | 59 tests passed: 12 IPC, 3 platform, and 44 runtime, including 5 dashboard tests.                                                                             |
+| `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source.                                   |
+| Core `cargo test --workspace` on `184f288`              | Passed, including four new category-ranking tests.                                                                                                            |
+| Core `cargo clippy`, `cargo deny`, `cargo doc`          | Clean.                                                                                                                                                        |
+| `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                                                   |
+| GitHub Actions on `d3fc247`                             | UI CI passed in 41 s; Windows desktop CI passed in 3 min 24 s; Core CI on `9f5411a` passed in 1 min 39 s (the feature commit `184f288` passed in 1 min 27 s). |
 
 ### Live dashboard and report check
 
