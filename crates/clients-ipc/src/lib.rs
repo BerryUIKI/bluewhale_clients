@@ -10,12 +10,14 @@ pub mod commands;
 mod error;
 pub mod ledger;
 pub mod master_data;
+pub mod transactions;
 
 pub use commands::{
     account_create, account_group_create, account_group_update, account_update, app_info,
     category_create, category_group_create, category_group_update, category_update,
     counterparty_create, counterparty_update, ledger_active_profile, ledger_create, ledger_list,
-    ledger_remove, ledger_switch, master_data, tag_create, tag_update,
+    ledger_remove, ledger_switch, master_data, tag_create, tag_update, transaction_create,
+    transaction_delete, transaction_get, transaction_list, transaction_restore, transaction_update,
 };
 pub use error::{CommandError, CommandErrorDetail, ErrorCode};
 pub use ledger::{
@@ -29,6 +31,11 @@ pub use master_data::{
     CategoryKindDto, CategoryUpdateRequestDto, CounterpartyCreateRequestDto, CounterpartyDto,
     CounterpartyKindDto, CounterpartyUpdateRequestDto, MasterDataDto, TagCreateRequestDto, TagDto,
     TagUpdateRequestDto,
+};
+pub use transactions::{
+    TransactionCreateRequestDto, TransactionDirectionDto, TransactionDto, TransactionKindDto,
+    TransactionListDto, TransactionQueryRequestDto, TransactionScopeDto,
+    TransactionUpdateRequestDto,
 };
 
 /// Build and platform information returned by the `app_info` command.
@@ -81,6 +88,12 @@ pub fn builder() -> tauri_specta::Builder<tauri::Wry> {
             commands::tag_update,
             commands::counterparty_create,
             commands::counterparty_update,
+            commands::transaction_list,
+            commands::transaction_get,
+            commands::transaction_create,
+            commands::transaction_update,
+            commands::transaction_delete,
+            commands::transaction_restore,
         ])
         .error_handling(tauri_specta::ErrorHandlingMode::Result)
 }

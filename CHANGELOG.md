@@ -25,10 +25,15 @@ All notable changes to the Bluewhale clients are documented in this file. The pr
 - `clients-ipc` master-data commands: `master_data`, `account_create`, `account_update`, `account_group_create`, `account_group_update`, `category_group_create`, `category_group_update`, `category_create`, `category_update`, `tag_create`, `tag_update`, `counterparty_create`, and `counterparty_update`, with DTOs for every record and request. The bindings were regenerated and the drift test covers them.
 - Interface master-data screens with accessible modal forms (Radix Dialog, React Hook Form, Zod), a reporting-currency default for new accounts, navigation entries, and complete English and Simplified Chinese resources.
 - Test coverage for the master-data work: 11 runtime tests, IPC error-mapping and enum round-trip tests, and 17 interface tests, plus a live WebView2 check of creation, archiving, restoring, and persistence after reload.
+- Phase 3.4 transactions: a history grouped by ledger-local day with search and filters for text, kind, account, category, tag, counterparty, and an inclusive date range; an editor for expenses, incomes, and transfers with exact source and destination amounts, tags, one counterparty, and a note; soft deletion and a recovery view; and opening balances shown in the history without an edit action.
+- `clients-runtime` transaction service: list, get, create, update, soft delete, and restore composed from the approved core use cases, with occurrence times interpreted in the ledger time zone and entries carrying the UTC instant plus the ledger-local date and time.
+- `clients-ipc` transaction commands: `transaction_list`, `transaction_get`, `transaction_create`, `transaction_update`, `transaction_delete`, and `transaction_restore`, with exact decimal amount strings, currency scales, reporting directions, and DTOs for every request. The bindings were regenerated and the drift test covers them.
+- The transaction editor defaults its date and time to the ledger time zone, reveals the received-amount field only for cross-currency transfers, warns when a current reference is archived, and clears kind-specific fields when the kind changes.
+- Test coverage for the transaction work: 11 runtime tests, 3 IPC tests, and 10 interface tests, plus a live WebView2 check of recording, filtering, editing, deleting, restoring, and persistence after reload.
 
 ### Changed
 
-- Repository status is pre-alpha. Phase 3.3 is complete; transactions, reports, sync, the Android application, and the ledger features beyond master data are not implemented yet.
+- Repository status is pre-alpha. Phase 3.4 is complete; reports, sync, the Android application, and the ledger features beyond transactions are not implemented yet.
 - The Rust workspace now builds the core persistence crate with vendored SQLCipher and OpenSSL, so cargo commands need the native Windows Perl and `nmake` environment.
 
 ### Security

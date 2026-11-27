@@ -25,6 +25,11 @@ import type {
   TagCreateRequestDto,
   TagDto,
   TagUpdateRequestDto,
+  TransactionCreateRequestDto,
+  TransactionDto,
+  TransactionListDto,
+  TransactionQueryRequestDto,
+  TransactionUpdateRequestDto,
 } from "@bluewhale/ipc";
 
 /** The subset of the IPC surface the interface depends on. */
@@ -67,6 +72,18 @@ export interface IpcClient {
   counterpartyCreate(request: CounterpartyCreateRequestDto): Promise<CounterpartyDto>;
   /** Updates a counterparty. */
   counterpartyUpdate(request: CounterpartyUpdateRequestDto): Promise<CounterpartyDto>;
+  /** Lists transactions matching the query. */
+  transactionList(request: TransactionQueryRequestDto): Promise<TransactionListDto>;
+  /** Returns one transaction. */
+  transactionGet(transactionId: string): Promise<TransactionDto>;
+  /** Creates a transaction. */
+  transactionCreate(request: TransactionCreateRequestDto): Promise<TransactionDto>;
+  /** Updates a transaction. */
+  transactionUpdate(request: TransactionUpdateRequestDto): Promise<TransactionDto>;
+  /** Soft-deletes a transaction. */
+  transactionDelete(transactionId: string): Promise<TransactionDto>;
+  /** Restores a soft-deleted transaction. */
+  transactionRestore(transactionId: string): Promise<TransactionDto>;
 }
 
 /** The injection point for the IPC client. */

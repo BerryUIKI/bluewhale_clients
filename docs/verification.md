@@ -234,3 +234,97 @@ clean data directory. The DevTools Protocol drove the interface:
   screens were not reviewed manually; locale key parity and non-empty messages
   are tested.
 - **Android and release packaging:** unchanged from Phase 3.1.
+
+## Phase 3.4 transactions (2026-11-27)
+
+### Changes
+
+- The transactions screen lists expenses, incomes, transfers, and opening
+  balances by ledger-local day, with search and filters for kind, account,
+  category, tag, counterparty, and an inclusive ledger-local date range.
+- The editor creates and edits expenses, incomes, and transfers. It defaults the
+  occurrence time to the ledger time zone, reveals the received-amount field only
+  for cross-currency transfers, and requires active accounts, categories, tags,
+  and counterparties. Opening balances are listed and recoverable but cannot be
+  edited.
+- Soft deletion moves an entry to the recovery view, where it can be restored.
+  The history shows a deleted-status message with a link to recovery.
+- Amounts cross the IPC boundary as exact decimal strings with their currency
+  scale; the runtime formats them, and the interface never parses or converts
+  money. Occurrence times carry both the UTC instant and the ledger-local date
+  and time.
+- Ten interface tests cover the list, filters, creation, cross-currency
+  transfers, editing, deletion and recovery, opening balances, and validation;
+  the runtime and IPC layers add fourteen tests.
+
+### Commands and results
+
+| Command                                                 | Result                                                                                                                      |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format`, `pnpm lint`                              | Clean; 0 problems.                                                                                                          |
+| `pnpm typecheck`                                        | Clean for `@bluewhale/ipc` and `@bluewhale/ui`.                                                                             |
+| `pnpm test`                                             | 13 files, 63 tests passed.                                                                                                  |
+| `pnpm --filter @bluewhale/ui build`                     | 298 modules; JS 674.13 kB (201.40 kB gzip), CSS 23.54 kB (5.04 kB gzip). Vite reports one chunk above 500 kB.               |
+| `cargo fmt --all --check`                               | Clean.                                                                                                                      |
+| `cargo clippy --workspace --all-targets -- -D warnings` | Clean.                                                                                                                      |
+| `cargo test --workspace`                                | 52 tests passed: 10 IPC, 3 platform, and 39 runtime, including 11 transaction tests.                                        |
+| `cargo deny check`                                      | advisories, bans, licenses, and sources ok, with the recorded Tauri and SQLCipher licenses and the allowed core git source. |
+| `pnpm --filter @bluewhale/desktop build:debug`          | Built `target/debug/bluewhale-desktop.exe`.                                                                                 |
+
+### Live transactions check
+
+The final debug build was started with
+`BLUEWHALE_DATA_DIR=D:\dev\scratch\bw-p34d-20261127\data`,
+`WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9417`, and a
+clean data directory. The DevTools Protocol drove the interface:
+
+1. Setup creates `Household` (CNY, `Asia/Shanghai`). A USD account,
+   `Dollar savings`, is created with a `25.00` opening balance.
+2. The `Travel` tag and the `Alex` counterparty are created.
+3. An expense of `88.50` CNY is recorded in Cash/Food with the Travel tag,
+   Alex, and the note Groceries. The row shows `−88.50 CNY` and the
+   ledger-local time `12:10` (Asia/Shanghai).
+4. An income of `5000.00` CNY in Cash/Salary is recorded with the note Salary.
+5. A transfer of `100.00` CNY to Dollar savings with a received amount of
+   `14.20` USD is recorded; the row shows `100.00 CNY → 14.20 USD` and
+   `Cash → Dollar savings`.
+6. The history shows four rows including the `25.00 USD` opening balance, which
+   has no Edit action.
+7. Search `groceries` returns one row, the Income kind filter returns one row,
+   and the Dollar savings account filter returns two rows (the transfer and the
+   opening balance); clearing restores all four.
+8. Editing the income to `5200.00` updates the row and keeps its identity.
+9. Deleting the expense moves it to Recovery; restoring it returns it to the
+   history.
+10. Reloading the window keeps all four rows and their values.
+11. The data directory holds an encrypted ledger database and a 262-byte DPAPI
+    key blob; `catalog.json` has no key material.
+
+### Observations
+
+- The occurrence default is computed in the ledger time zone with
+  `Intl.DateTimeFormat`, sent as a local date-time, and interpreted by the
+  runtime in the same zone. The device time zone never changes the ledger day.
+- Opening balances are rejected by `UpdateTransactionUseCase`; the history hides
+  Edit for that kind and offers delete and restore only.
+- The editor clears kind-specific fields when the kind changes and warns when a
+  current reference is archived, because archived accounts, categories, tags,
+  and counterparties cannot receive new assignments.
+- The transaction list keeps the previous rows visible while a debounced filter
+  query runs, so typing in the search field does not blank the screen.
+- A soft-deleted transaction cannot be edited; opening it shows a recovery
+  notice with a link to the recovery view.
+
+### Not verified in this environment
+
+- **Balances, totals, and reports:** Phase 3.5; the transaction screen shows
+  entries, not aggregates.
+- **Reconciliation flags and note presets:** deferred to v1.1 by the product
+  spec.
+- **Release bundles and installers:** only the debug build was produced; MSI and
+  NSIS packaging belong to P3.8.
+- **Accessibility automation and Chinese screens:** no axe or NVDA pass was run,
+  and the live check used English; locale key parity and non-empty messages are
+  tested.
+- **10,000-transaction performance and virtualization:** P3.8.
+- **Android:** unchanged from Phase 3.1.

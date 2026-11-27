@@ -159,6 +159,58 @@ export const commands = {
 	 *  Returns [`CommandError`] for invalid input or a store failure.
 	 */
 	counterpartyUpdate: (request: CounterpartyUpdateRequestDto, options?: InvokeOptions) => typedError<CounterpartyDto, CommandError_Serialize>(__TAURI_INVOKE("counterparty_update", { request }, options)),
+	/**
+	 *  Lists transactions matching the query.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for a malformed filter or a store failure.
+	 */
+	transactionList: (request: TransactionQueryRequestDto_Deserialize, options?: InvokeOptions) => typedError<TransactionListDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("transaction_list", { request }, options)),
+	/**
+	 *  Returns one transaction.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when the transaction does not exist or the store
+	 *  fails.
+	 */
+	transactionGet: (transactionId: string, options?: InvokeOptions) => typedError<TransactionDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("transaction_get", { transactionId }, options)),
+	/**
+	 *  Creates a transaction.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input or a store failure.
+	 */
+	transactionCreate: (request: TransactionCreateRequestDto_Deserialize, options?: InvokeOptions) => typedError<TransactionDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("transaction_create", { request }, options)),
+	/**
+	 *  Updates a transaction.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] for invalid input, an unusable transaction, or a
+	 *  store failure.
+	 */
+	transactionUpdate: (request: TransactionUpdateRequestDto_Deserialize, options?: InvokeOptions) => typedError<TransactionDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("transaction_update", { request }, options)),
+	/**
+	 *  Soft-deletes a transaction.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when the transaction does not exist or the store
+	 *  fails.
+	 */
+	transactionDelete: (transactionId: string, options?: InvokeOptions) => typedError<TransactionDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("transaction_delete", { transactionId }, options)),
+	/**
+	 *  Restores a soft-deleted transaction.
+	 * 
+	 *  # Errors
+	 * 
+	 *  Returns [`CommandError`] when the transaction does not exist or the store
+	 *  fails.
+	 */
+	transactionRestore: (transactionId: string, options?: InvokeOptions) => typedError<TransactionDto_Serialize, CommandError_Serialize>(__TAURI_INVOKE("transaction_restore", { transactionId }, options)),
 };
 
 /* Types */
@@ -841,6 +893,294 @@ export type TagUpdateRequestDto_Serialize = {
 	description: string | null,
 	/**  Whether the tag is archived. */
 	isArchived: boolean,
+};
+
+/**  A request to create a transaction. */
+export type TransactionCreateRequestDto = TransactionCreateRequestDto_Serialize | TransactionCreateRequestDto_Deserialize;
+
+/**  A request to create a transaction. */
+export type TransactionCreateRequestDto_Deserialize = {
+	/**  The event kind. */
+	kind: TransactionKindDto,
+	/**  The amount magnitude as entered. */
+	amountText: string,
+	/**  The optional destination amount magnitude for transfers. */
+	destinationAmountText?: string | null,
+	/**  The occurrence local time in the ledger zone, `YYYY-MM-DDTHH:mm`. */
+	occurredAt: string,
+	/**  The source or single account identity. */
+	accountId: string,
+	/**  The transfer destination account identity. */
+	destinationAccountId?: string | null,
+	/**  The category identity. */
+	categoryId?: string | null,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The counterparty identity. */
+	counterpartyId?: string | null,
+	/**  The optional note. */
+	note?: string | null,
+};
+
+/**  A request to create a transaction. */
+export type TransactionCreateRequestDto_Serialize = {
+	/**  The event kind. */
+	kind: TransactionKindDto,
+	/**  The amount magnitude as entered. */
+	amountText: string,
+	/**  The optional destination amount magnitude for transfers. */
+	destinationAmountText: string | null,
+	/**  The occurrence local time in the ledger zone, `YYYY-MM-DDTHH:mm`. */
+	occurredAt: string,
+	/**  The source or single account identity. */
+	accountId: string,
+	/**  The transfer destination account identity. */
+	destinationAccountId: string | null,
+	/**  The category identity. */
+	categoryId: string | null,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The counterparty identity. */
+	counterpartyId: string | null,
+	/**  The optional note. */
+	note: string | null,
+};
+
+/**  The reporting direction of an entry's amount. */
+export type TransactionDirectionDto = 
+/**  Money leaves the source account. */
+"outflow" | 
+/**  Money enters the account. */
+"inflow" | 
+/**  Money moves between accounts. */
+"neutral" | 
+/**  The initial balance of an account. */
+"opening";
+
+/**  One transaction prepared for display. */
+export type TransactionDto = TransactionDto_Serialize | TransactionDto_Deserialize;
+
+/**  One transaction prepared for display. */
+export type TransactionDto_Deserialize = {
+	/**  The transaction identity. */
+	id: string,
+	/**  The event kind. */
+	kind: TransactionKindDto,
+	/**  The reporting direction. */
+	direction: TransactionDirectionDto,
+	/**  The amount as an exact decimal string. */
+	amountText: string,
+	/**  The amount currency code. */
+	currencyCode: string,
+	/**  The amount currency scale. */
+	scale: number,
+	/**  The received amount of a cross-currency transfer. */
+	destinationAmountText?: string | null,
+	/**  The received amount currency code. */
+	destinationCurrencyCode?: string | null,
+	/**  The received amount currency scale. */
+	destinationScale?: number | null,
+	/**  The occurrence instant as RFC 3339. */
+	occurredAt: string,
+	/**  The occurrence date in the ledger time zone. */
+	occurredOn: string,
+	/**  The occurrence local time in the ledger time zone, for the editor. */
+	occurredAtLocal: string,
+	/**  The source or single account. */
+	accountId: string,
+	/**  The transfer destination account. */
+	destinationAccountId?: string | null,
+	/**  The classifying category. */
+	categoryId?: string | null,
+	/**  The attached tags. */
+	tagIds: string[],
+	/**  The optional counterparty. */
+	counterpartyId?: string | null,
+	/**  The optional note. */
+	note?: string | null,
+	/**  Whether the transaction is soft-deleted. */
+	isDeleted: boolean,
+	/**  The creation instant as RFC 3339. */
+	createdAt: string,
+};
+
+/**  One transaction prepared for display. */
+export type TransactionDto_Serialize = {
+	/**  The transaction identity. */
+	id: string,
+	/**  The event kind. */
+	kind: TransactionKindDto,
+	/**  The reporting direction. */
+	direction: TransactionDirectionDto,
+	/**  The amount as an exact decimal string. */
+	amountText: string,
+	/**  The amount currency code. */
+	currencyCode: string,
+	/**  The amount currency scale. */
+	scale: number,
+	/**  The received amount of a cross-currency transfer. */
+	destinationAmountText: string | null,
+	/**  The received amount currency code. */
+	destinationCurrencyCode: string | null,
+	/**  The received amount currency scale. */
+	destinationScale: number | null,
+	/**  The occurrence instant as RFC 3339. */
+	occurredAt: string,
+	/**  The occurrence date in the ledger time zone. */
+	occurredOn: string,
+	/**  The occurrence local time in the ledger time zone, for the editor. */
+	occurredAtLocal: string,
+	/**  The source or single account. */
+	accountId: string,
+	/**  The transfer destination account. */
+	destinationAccountId: string | null,
+	/**  The classifying category. */
+	categoryId: string | null,
+	/**  The attached tags. */
+	tagIds: string[],
+	/**  The optional counterparty. */
+	counterpartyId: string | null,
+	/**  The optional note. */
+	note: string | null,
+	/**  Whether the transaction is soft-deleted. */
+	isDeleted: boolean,
+	/**  The creation instant as RFC 3339. */
+	createdAt: string,
+};
+
+/**  The kind of ledger event. */
+export type TransactionKindDto = 
+/**  An opening balance for an account. */
+"opening_balance" | 
+/**  Money leaving the ledger. */
+"expense" | 
+/**  Money entering the ledger. */
+"income" | 
+/**  Money moving between two accounts. */
+"transfer";
+
+/**  A transaction list. */
+export type TransactionListDto = TransactionListDto_Serialize | TransactionListDto_Deserialize;
+
+/**  A transaction list. */
+export type TransactionListDto_Deserialize = {
+	/**  The matching transactions, newest first. */
+	transactions: TransactionDto_Deserialize[],
+};
+
+/**  A transaction list. */
+export type TransactionListDto_Serialize = {
+	/**  The matching transactions, newest first. */
+	transactions: TransactionDto_Serialize[],
+};
+
+/**  The filter, search, and scope of a transaction list. */
+export type TransactionQueryRequestDto = TransactionQueryRequestDto_Serialize | TransactionQueryRequestDto_Deserialize;
+
+/**  The filter, search, and scope of a transaction list. */
+export type TransactionQueryRequestDto_Deserialize = {
+	/**  Which transactions to return. */
+	scope?: TransactionScopeDto,
+	/**  Case- and width-insensitive search text. */
+	searchText?: string,
+	/**  Restrict to one kind. */
+	kind?: TransactionKindDto | null,
+	/**  Restrict to transactions involving one account. */
+	accountId?: string | null,
+	/**  Restrict to one category. */
+	categoryId?: string | null,
+	/**  Restrict to one tag. */
+	tagId?: string | null,
+	/**  Restrict to one counterparty. */
+	counterpartyId?: string | null,
+	/**  Inclusive first day in the ledger time zone, `YYYY-MM-DD`. */
+	startDay?: string | null,
+	/**  Inclusive last day in the ledger time zone, `YYYY-MM-DD`. */
+	endDay?: string | null,
+};
+
+/**  The filter, search, and scope of a transaction list. */
+export type TransactionQueryRequestDto_Serialize = {
+	/**  Which transactions to return. */
+	scope: TransactionScopeDto,
+	/**  Case- and width-insensitive search text. */
+	searchText: string,
+	/**  Restrict to one kind. */
+	kind: TransactionKindDto | null,
+	/**  Restrict to transactions involving one account. */
+	accountId: string | null,
+	/**  Restrict to one category. */
+	categoryId: string | null,
+	/**  Restrict to one tag. */
+	tagId: string | null,
+	/**  Restrict to one counterparty. */
+	counterpartyId: string | null,
+	/**  Inclusive first day in the ledger time zone, `YYYY-MM-DD`. */
+	startDay: string | null,
+	/**  Inclusive last day in the ledger time zone, `YYYY-MM-DD`. */
+	endDay: string | null,
+};
+
+/**  Which transactions a list returns. */
+export type TransactionScopeDto = 
+/**  Active transactions. */
+"active" | 
+/**  Soft-deleted transactions. */
+"deleted";
+
+/**  A request to update a transaction. */
+export type TransactionUpdateRequestDto = TransactionUpdateRequestDto_Serialize | TransactionUpdateRequestDto_Deserialize;
+
+/**  A request to update a transaction. */
+export type TransactionUpdateRequestDto_Deserialize = {
+	/**  The transaction identity. */
+	id: string,
+	/**  The event kind. */
+	kind: TransactionKindDto,
+	/**  The amount magnitude as entered. */
+	amountText: string,
+	/**  The optional destination amount magnitude for transfers. */
+	destinationAmountText?: string | null,
+	/**  The occurrence local time in the ledger zone, `YYYY-MM-DDTHH:mm`. */
+	occurredAt: string,
+	/**  The source or single account identity. */
+	accountId: string,
+	/**  The transfer destination account identity. */
+	destinationAccountId?: string | null,
+	/**  The category identity. */
+	categoryId?: string | null,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The counterparty identity. */
+	counterpartyId?: string | null,
+	/**  The optional note. */
+	note?: string | null,
+};
+
+/**  A request to update a transaction. */
+export type TransactionUpdateRequestDto_Serialize = {
+	/**  The transaction identity. */
+	id: string,
+	/**  The event kind. */
+	kind: TransactionKindDto,
+	/**  The amount magnitude as entered. */
+	amountText: string,
+	/**  The optional destination amount magnitude for transfers. */
+	destinationAmountText: string | null,
+	/**  The occurrence local time in the ledger zone, `YYYY-MM-DDTHH:mm`. */
+	occurredAt: string,
+	/**  The source or single account identity. */
+	accountId: string,
+	/**  The transfer destination account identity. */
+	destinationAccountId: string | null,
+	/**  The category identity. */
+	categoryId: string | null,
+	/**  The tag identities. */
+	tagIds: string[],
+	/**  The counterparty identity. */
+	counterpartyId: string | null,
+	/**  The optional note. */
+	note: string | null,
 };
 
 /* Tauri Specta runtime */

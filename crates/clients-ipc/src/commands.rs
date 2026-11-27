@@ -3,7 +3,8 @@
 
 use tauri::{AppHandle, State};
 
-use clients_runtime::{MasterDataError, master_data};
+use clients_runtime::transactions as transaction_service;
+use clients_runtime::{MasterDataError, TransactionError, master_data};
 
 use crate::ledger::{
     ActiveLedgerProfileDto, AppState, CreateLedgerRequestDto, LedgerListDto, LedgerSummaryDto,
@@ -16,6 +17,10 @@ use crate::master_data::{
     CategoryUpdateRequestDto, CounterpartyCreateRequestDto, CounterpartyDto,
     CounterpartyUpdateRequestDto, MasterDataDto, TagCreateRequestDto, TagDto, TagUpdateRequestDto,
     map_master_data_error,
+};
+use crate::transactions::{
+    TransactionCreateRequestDto, TransactionDto, TransactionListDto, TransactionQueryRequestDto,
+    TransactionUpdateRequestDto, map_transaction_error,
 };
 use crate::{AppInfo, CommandError};
 
@@ -373,4 +378,130 @@ pub fn counterparty_update(
         })
         .map(CounterpartyDto::from)
         .map_err(map_master_data_error)
+}
+
+/// Lists transactions matching the query.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for a malformed filter or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn transaction_list(
+    state: State<'_, AppState>,
+    request: TransactionQueryRequestDto,
+) -> Result<TransactionListDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(TransactionError::NoActiveLedger, |database| {
+            transaction_service::list(database, &request.into())
+        })
+        .map(|entries| TransactionListDto {
+            transactions: entries.into_iter().map(Into::into).collect(),
+        })
+        .map_err(map_transaction_error)
+}
+
+/// Returns one transaction.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] when the transaction does not exist or the store
+/// fails.
+#[tauri::command]
+#[specta::specta]
+pub fn transaction_get(
+    state: State<'_, AppState>,
+    transaction_id: String,
+) -> Result<TransactionDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(TransactionError::NoActiveLedger, |database| {
+            transaction_service::get(database, &transaction_id)
+        })
+        .map(TransactionDto::from)
+        .map_err(map_transaction_error)
+}
+
+/// Creates a transaction.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input or a store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn transaction_create(
+    state: State<'_, AppState>,
+    request: TransactionCreateRequestDto,
+) -> Result<TransactionDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(TransactionError::NoActiveLedger, |database| {
+            transaction_service::create(database, request.into())
+        })
+        .map(TransactionDto::from)
+        .map_err(map_transaction_error)
+}
+
+/// Updates a transaction.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] for invalid input, an unusable transaction, or a
+/// store failure.
+#[tauri::command]
+#[specta::specta]
+pub fn transaction_update(
+    state: State<'_, AppState>,
+    request: TransactionUpdateRequestDto,
+) -> Result<TransactionDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(TransactionError::NoActiveLedger, |database| {
+            transaction_service::update(database, request.into())
+        })
+        .map(TransactionDto::from)
+        .map_err(map_transaction_error)
+}
+
+/// Soft-deletes a transaction.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] when the transaction does not exist or the store
+/// fails.
+#[tauri::command]
+#[specta::specta]
+pub fn transaction_delete(
+    state: State<'_, AppState>,
+    transaction_id: String,
+) -> Result<TransactionDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(TransactionError::NoActiveLedger, |database| {
+            transaction_service::set_deleted(database, &transaction_id, true)
+        })
+        .map(TransactionDto::from)
+        .map_err(map_transaction_error)
+}
+
+/// Restores a soft-deleted transaction.
+///
+/// # Errors
+///
+/// Returns [`CommandError`] when the transaction does not exist or the store
+/// fails.
+#[tauri::command]
+#[specta::specta]
+pub fn transaction_restore(
+    state: State<'_, AppState>,
+    transaction_id: String,
+) -> Result<TransactionDto, CommandError> {
+    let service = state.lock()?;
+    service
+        .with_active_database(TransactionError::NoActiveLedger, |database| {
+            transaction_service::set_deleted(database, &transaction_id, false)
+        })
+        .map(TransactionDto::from)
+        .map_err(map_transaction_error)
 }

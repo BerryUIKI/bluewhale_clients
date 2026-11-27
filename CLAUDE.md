@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current status
 
-Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is complete. Phase 3.1 is implemented: the Tauri 2 Windows shell, the shared React interface with routing, design tokens, English and Simplified Chinese resources, persisted preferences, localized error handling, and TypeScript bindings generated from the Rust command boundary. Phase 3.2 adds ledger management: first-run setup, a device-local catalog, separate SQLCipher databases with DPAPI-protected keys, switching, and non-destructive recovery. Phase 3.3 adds master data: accounts with opening balances, tags, owners, and custom groups; two-level categories; tags; counterparties; and archive behavior on every list. Transactions, reports, sync, and the Android application are not implemented yet.
+Pre-alpha. The design reviews R1-R6 are approved and the Phase 0 Rust + Tauri spike is complete. Phase 3.1 is implemented: the Tauri 2 Windows shell, the shared React interface with routing, design tokens, English and Simplified Chinese resources, persisted preferences, localized error handling, and TypeScript bindings generated from the Rust command boundary. Phase 3.2 adds ledger management: first-run setup, a device-local catalog, separate SQLCipher databases with DPAPI-protected keys, switching, and non-destructive recovery. Phase 3.3 adds master data: accounts with opening balances, tags, owners, and custom groups; two-level categories; tags; counterparties; and archive behavior on every list. Phase 3.4 adds transactions: expense, income, and transfer entry with exact amounts, a ledger-local history with search and filters, editing, soft deletion, and a recovery view. Reports, sync, and the Android application are not implemented yet.
 
 ## Purpose and release boundary
 
@@ -18,19 +18,19 @@ Rules:
 
 ## Workspace layout
 
-| Path                      | Responsibility                                                                                        |
-| ------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `desktop/`                | Tauri 2 Windows application and its thin Rust command layer                                           |
-| `android/`                | Tauri 2 Android application, Kotlin plugins, and the committed Gradle project                         |
-| `ui/`                     | Shared React interface, features, localization, and styles                                            |
-| `packages/ipc`            | Generated TypeScript bindings and the typed command client                                            |
-| `packages/config`         | Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration                                   |
-| `packages/testkit`        | Test doubles, fixtures, and accessibility helpers                                                     |
-| `crates/clients-runtime`  | Application services composing core use cases, the ledger catalog, ledger management, and master data |
-| `crates/clients-ipc`      | Tauri commands, DTOs, and bindings generation                                                         |
-| `crates/clients-platform` | Platform services, including the Windows DPAPI key protector                                          |
-| `crates/clients-testkit`  | Fake platform services and IPC harnesses                                                              |
-| `e2e/`                    | Browser, Windows, and Android end-to-end tests                                                        |
+| Path                      | Responsibility                                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `desktop/`                | Tauri 2 Windows application and its thin Rust command layer                                                         |
+| `android/`                | Tauri 2 Android application, Kotlin plugins, and the committed Gradle project                                       |
+| `ui/`                     | Shared React interface, features, localization, and styles                                                          |
+| `packages/ipc`            | Generated TypeScript bindings and the typed command client                                                          |
+| `packages/config`         | Shared TypeScript, ESLint, Prettier, Vite, and Vitest configuration                                                 |
+| `packages/testkit`        | Test doubles, fixtures, and accessibility helpers                                                                   |
+| `crates/clients-runtime`  | Application services composing core use cases, the ledger catalog, ledger management, master data, and transactions |
+| `crates/clients-ipc`      | Tauri commands, DTOs, and bindings generation                                                                       |
+| `crates/clients-platform` | Platform services, including the Windows DPAPI key protector                                                        |
+| `crates/clients-testkit`  | Fake platform services and IPC harnesses                                                                            |
+| `e2e/`                    | Browser, Windows, and Android end-to-end tests                                                                      |
 
 Architectural rules:
 

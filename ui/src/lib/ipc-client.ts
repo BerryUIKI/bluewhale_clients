@@ -18,6 +18,12 @@ import {
   masterData,
   tagCreate,
   tagUpdate,
+  transactionCreate,
+  transactionDelete,
+  transactionGet,
+  transactionList,
+  transactionRestore,
+  transactionUpdate,
 } from "@bluewhale/ipc";
 import type { IpcClient } from "./ipc-context";
 
@@ -42,4 +48,10 @@ export const desktopIpcClient: IpcClient = {
   tagUpdate,
   counterpartyCreate,
   counterpartyUpdate,
+  transactionList,
+  transactionGet,
+  transactionCreate,
+  transactionUpdate,
+  transactionDelete,
+  transactionRestore,
 };

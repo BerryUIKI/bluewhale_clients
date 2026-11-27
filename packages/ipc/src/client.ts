@@ -29,6 +29,11 @@ import type {
   TagCreateRequestDto,
   TagDto,
   TagUpdateRequestDto,
+  TransactionCreateRequestDto,
+  TransactionDto,
+  TransactionListDto,
+  TransactionQueryRequestDto,
+  TransactionUpdateRequestDto,
 } from "./bindings";
 
 export type {
@@ -65,6 +70,14 @@ export type {
   TagCreateRequestDto,
   TagDto,
   TagUpdateRequestDto,
+  TransactionCreateRequestDto,
+  TransactionDirectionDto,
+  TransactionDto,
+  TransactionKindDto,
+  TransactionListDto,
+  TransactionQueryRequestDto,
+  TransactionScopeDto,
+  TransactionUpdateRequestDto,
 } from "./bindings";
 
 /** The shape a command binding resolves to in result mode. */
@@ -227,4 +240,34 @@ export function counterpartyUpdate(
   request: CounterpartyUpdateRequestDto,
 ): Promise<CounterpartyDto> {
   return call(() => commands.counterpartyUpdate(request));
+}
+
+/** Lists transactions matching the query. */
+export function transactionList(request: TransactionQueryRequestDto): Promise<TransactionListDto> {
+  return call(() => commands.transactionList(request));
+}
+
+/** Returns one transaction. */
+export function transactionGet(transactionId: string): Promise<TransactionDto> {
+  return call(() => commands.transactionGet(transactionId));
+}
+
+/** Creates a transaction. */
+export function transactionCreate(request: TransactionCreateRequestDto): Promise<TransactionDto> {
+  return call(() => commands.transactionCreate(request));
+}
+
+/** Updates a transaction. */
+export function transactionUpdate(request: TransactionUpdateRequestDto): Promise<TransactionDto> {
+  return call(() => commands.transactionUpdate(request));
+}
+
+/** Soft-deletes a transaction. */
+export function transactionDelete(transactionId: string): Promise<TransactionDto> {
+  return call(() => commands.transactionDelete(transactionId));
+}
+
+/** Restores a soft-deleted transaction. */
+export function transactionRestore(transactionId: string): Promise<TransactionDto> {
+  return call(() => commands.transactionRestore(transactionId));
 }

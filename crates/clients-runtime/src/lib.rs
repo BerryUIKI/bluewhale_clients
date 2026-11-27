@@ -10,10 +10,11 @@ pub mod clock;
 pub mod error;
 pub mod ledger;
 pub mod master_data;
+pub mod transactions;
 
 pub use catalog::{CatalogStore, LedgerCatalog, LedgerDescriptor};
 pub use clock::{SystemClock, Uuidv7Source};
-pub use error::{LedgerError, MasterDataError};
+pub use error::{LedgerError, MasterDataError, TransactionError};
 pub use ledger::{
     ActiveLedgerProfile, CreateLedgerRequest, DefaultContent, LedgerList, LedgerService,
     LedgerStatus, LedgerSummary, LedgerUnavailable, RemovedLedger,

@@ -168,3 +168,94 @@ impl From<core_domain::RepositoryError> for MasterDataError {
         Self::Internal
     }
 }
+
+/// A failure from a transaction operation.
+///
+/// The variants are stable reasons; the IPC layer maps each to an error code
+/// and a message key. None of them carry financial data.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TransactionError {
+    /// No ledger is open, so there is no database to read or write.
+    NoActiveLedger,
+    /// The ledger database has not been initialized.
+    NotInitialized,
+    /// A supplied identifier cannot be used.
+    InvalidReference,
+    /// The occurrence date and time cannot be interpreted in the ledger zone.
+    InvalidDateTime,
+    /// A day range is malformed or inverted.
+    InvalidDateRange,
+    /// The amount text is not a valid decimal for the currency.
+    InvalidAmount,
+    /// The amount is zero or negative.
+    AmountNotPositive,
+    /// The source account is missing or archived.
+    AccountUnavailable,
+    /// The destination account is missing or archived.
+    DestinationUnavailable,
+    /// The category is missing, archived, or of the wrong kind.
+    CategoryUnavailable,
+    /// An expense or income has no category.
+    CategoryRequired,
+    /// A tag is missing or archived.
+    TagUnavailable,
+    /// The counterparty is missing or archived.
+    CounterpartyUnavailable,
+    /// The transfer rules are violated.
+    TransferRules,
+    /// The kind does not allow one of the supplied fields.
+    FieldNotAllowed,
+    /// The transaction does not exist.
+    NotFound,
+    /// The transaction is soft-deleted and cannot be edited.
+    Deleted,
+    /// An opening balance cannot be edited through the transaction editor.
+    OpeningBalanceReadOnly,
+    /// A filter references a record that is no longer in the ledger.
+    FilterReferenceUnavailable,
+    /// An unexpected local failure occurred.
+    Internal,
+}
+
+impl TransactionError {
+    /// Returns the stable message key the interface localizes.
+    #[must_use]
+    pub const fn message_key(&self) -> &'static str {
+        match self {
+            Self::NoActiveLedger => "errors.transaction_no_ledger",
+            Self::NotInitialized => "errors.transaction_not_initialized",
+            Self::InvalidReference => "errors.transaction_reference",
+            Self::InvalidDateTime => "errors.transaction_date",
+            Self::InvalidDateRange => "errors.transaction_date_range",
+            Self::InvalidAmount => "errors.transaction_amount",
+            Self::AmountNotPositive => "errors.transaction_amount_positive",
+            Self::AccountUnavailable => "errors.transaction_account",
+            Self::DestinationUnavailable => "errors.transaction_destination_account",
+            Self::CategoryUnavailable => "errors.transaction_category",
+            Self::CategoryRequired => "errors.transaction_category_required",
+            Self::TagUnavailable => "errors.transaction_tag",
+            Self::CounterpartyUnavailable => "errors.transaction_counterparty",
+            Self::TransferRules => "errors.transaction_transfer",
+            Self::FieldNotAllowed => "errors.transaction_field_not_allowed",
+            Self::NotFound => "errors.transaction_not_found",
+            Self::Deleted => "errors.transaction_deleted",
+            Self::OpeningBalanceReadOnly => "errors.transaction_opening_balance",
+            Self::FilterReferenceUnavailable => "errors.transaction_filter_reference",
+            Self::Internal => "errors.transaction_internal",
+        }
+    }
+}
+
+impl fmt::Display for TransactionError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.message_key())
+    }
+}
+
+impl std::error::Error for TransactionError {}
+
+impl From<core_domain::RepositoryError> for TransactionError {
+    fn from(_: core_domain::RepositoryError) -> Self {
+        Self::Internal
+    }
+}

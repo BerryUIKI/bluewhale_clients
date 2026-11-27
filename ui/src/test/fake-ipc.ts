@@ -27,6 +27,11 @@ import type {
   TagCreateRequestDto,
   TagDto,
   TagUpdateRequestDto,
+  TransactionCreateRequestDto,
+  TransactionDto,
+  TransactionListDto,
+  TransactionQueryRequestDto,
+  TransactionUpdateRequestDto,
 } from "@bluewhale/ipc";
 import type { IpcClient } from "../lib/ipc-context";
 
@@ -40,6 +45,8 @@ export interface FakeState {
   createError: Error | null;
   masterData: MasterDataDto;
   masterDataError: Error | null;
+  transactions: TransactionDto[];
+  transactionError: Error | null;
 }
 
 export interface FakeIpc {
@@ -115,6 +122,8 @@ export function createFakeIpc(initial?: Partial<FakeState>): FakeIpc {
     createError: null,
     masterData: emptyMasterData(),
     masterDataError: null,
+    transactions: [],
+    transactionError: null,
     ...initial,
   };
 
@@ -136,6 +145,101 @@ export function createFakeIpc(initial?: Partial<FakeState>): FakeIpc {
       ),
     };
     return account;
+  };
+
+  const scaleFor = (code: string) => (code === "JPY" || code === "KRW" ? 0 : 2);
+
+  const accountCurrency = (id: string) =>
+    state.masterData.accounts.find((account) => account.id === id)?.currencyCode ?? "USD";
+
+  const buildTransaction = (
+    request: TransactionCreateRequestDto,
+    id: string,
+    createdAt = "2026-11-27T00:00:00Z",
+  ): TransactionDto => {
+    const currencyCode = accountCurrency(request.accountId);
+    const destinationCurrency = request.destinationAccountId
+      ? accountCurrency(request.destinationAccountId)
+      : null;
+    return {
+      id,
+      kind: request.kind,
+      direction:
+        request.kind === "expense"
+          ? "outflow"
+          : request.kind === "income"
+            ? "inflow"
+            : request.kind === "transfer"
+              ? "neutral"
+              : "opening",
+      amountText: request.amountText,
+      currencyCode,
+      scale: scaleFor(currencyCode),
+      destinationAmountText: request.destinationAmountText ?? null,
+      destinationCurrencyCode: request.destinationAmountText ? destinationCurrency : null,
+      destinationScale:
+        request.destinationAmountText && destinationCurrency ? scaleFor(destinationCurrency) : null,
+      occurredAt: `${request.occurredAt}:00Z`,
+      occurredOn: request.occurredAt.slice(0, 10),
+      occurredAtLocal: request.occurredAt,
+      accountId: request.accountId,
+      destinationAccountId: request.destinationAccountId ?? null,
+      categoryId: request.categoryId ?? null,
+      tagIds: [...request.tagIds],
+      counterpartyId: request.counterpartyId ?? null,
+      note: request.note ?? null,
+      isDeleted: false,
+      createdAt,
+    };
+  };
+
+  const transactionMatches = (entry: TransactionDto, request: TransactionQueryRequestDto) => {
+    if (request.scope === "deleted" ? !entry.isDeleted : entry.isDeleted) {
+      return false;
+    }
+    if (request.kind && entry.kind !== request.kind) {
+      return false;
+    }
+    if (
+      request.accountId &&
+      entry.accountId !== request.accountId &&
+      entry.destinationAccountId !== request.accountId
+    ) {
+      return false;
+    }
+    if (request.categoryId && entry.categoryId !== request.categoryId) {
+      return false;
+    }
+    if (request.tagId && !entry.tagIds.includes(request.tagId)) {
+      return false;
+    }
+    if (request.counterpartyId && entry.counterpartyId !== request.counterpartyId) {
+      return false;
+    }
+    if (request.startDay && entry.occurredOn < request.startDay) {
+      return false;
+    }
+    if (request.endDay && entry.occurredOn > request.endDay) {
+      return false;
+    }
+    if (request.searchText) {
+      const name = (list: { id: string; name: string }[], id: string | null | undefined) =>
+        list.find((item) => item.id === id)?.name ?? "";
+      const haystack = [
+        entry.note ?? "",
+        name(state.masterData.accounts, entry.accountId),
+        name(state.masterData.accounts, entry.destinationAccountId),
+        name(state.masterData.categories, entry.categoryId),
+        name(state.masterData.counterparties, entry.counterpartyId),
+        ...entry.tagIds.map((id) => name(state.masterData.tags, id)),
+      ]
+        .join(" ")
+        .toLowerCase();
+      if (!haystack.includes(request.searchText.toLowerCase())) {
+        return false;
+      }
+    }
+    return true;
   };
 
   const ipc: IpcClient = {
@@ -412,6 +516,92 @@ export function createFakeIpc(initial?: Partial<FakeState>): FakeIpc {
         ),
       };
       return counterparty;
+    },
+    transactionList: async (request: TransactionQueryRequestDto): Promise<TransactionListDto> => {
+      if (state.transactionError) {
+        throw state.transactionError;
+      }
+      requireLedger();
+      const transactions = state.transactions
+        .filter((entry) => transactionMatches(entry, request))
+        .sort(
+          (left, right) =>
+            right.occurredOn.localeCompare(left.occurredOn) ||
+            right.occurredAtLocal.localeCompare(left.occurredAtLocal),
+        );
+      return { transactions };
+    },
+    transactionGet: async (transactionId: string) => {
+      requireLedger();
+      const entry = state.transactions.find((transaction) => transaction.id === transactionId);
+      if (!entry) {
+        throw new IpcError({
+          code: "not_found",
+          messageKey: "errors.transaction_not_found",
+          details: null,
+        });
+      }
+      return { ...entry, tagIds: [...entry.tagIds] };
+    },
+    transactionCreate: async (request: TransactionCreateRequestDto) => {
+      if (state.transactionError) {
+        throw state.transactionError;
+      }
+      requireLedger();
+      const entry = buildTransaction(request, `transaction-${state.transactions.length + 1}`);
+      state.transactions = [entry, ...state.transactions];
+      return entry;
+    },
+    transactionUpdate: async (request: TransactionUpdateRequestDto) => {
+      if (state.transactionError) {
+        throw state.transactionError;
+      }
+      requireLedger();
+      const existing = state.transactions.find((transaction) => transaction.id === request.id);
+      if (!existing) {
+        throw new IpcError({
+          code: "not_found",
+          messageKey: "errors.transaction_not_found",
+          details: null,
+        });
+      }
+      const updated = buildTransaction(request, existing.id, existing.createdAt);
+      state.transactions = state.transactions.map((transaction) =>
+        transaction.id === updated.id ? updated : transaction,
+      );
+      return updated;
+    },
+    transactionDelete: async (transactionId: string) => {
+      requireLedger();
+      const existing = state.transactions.find((transaction) => transaction.id === transactionId);
+      if (!existing) {
+        throw new IpcError({
+          code: "not_found",
+          messageKey: "errors.transaction_not_found",
+          details: null,
+        });
+      }
+      const deleted = { ...existing, isDeleted: true };
+      state.transactions = state.transactions.map((transaction) =>
+        transaction.id === deleted.id ? deleted : transaction,
+      );
+      return deleted;
+    },
+    transactionRestore: async (transactionId: string) => {
+      requireLedger();
+      const existing = state.transactions.find((transaction) => transaction.id === transactionId);
+      if (!existing) {
+        throw new IpcError({
+          code: "not_found",
+          messageKey: "errors.transaction_not_found",
+          details: null,
+        });
+      }
+      const restored = { ...existing, isDeleted: false };
+      state.transactions = state.transactions.map((transaction) =>
+        transaction.id === restored.id ? restored : transaction,
+      );
+      return restored;
     },
   };
 
